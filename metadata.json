@@ -1,0 +1,6 @@
+{
+  "name": "Ilayyal Karigai — Crafted with intent",
+  "description": "A modern Indian clothing label built around natural fabrics, considered silhouettes and limited collections.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
