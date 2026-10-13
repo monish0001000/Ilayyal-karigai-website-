@@ -673,12 +673,16 @@ export default function App() {
       <section className="hero" id="top">
         <picture className="hero-picture">
           <source
+            media="(min-width: 768px)"
+            srcSet="/Elegant%20Ivory%20Saree%20Editorial.png"
+          />
+          <source
             media="(max-width: 767px)"
             srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MOBILE_HERO_IMAGE-juOsrQvhnz6q1V5azTnnKuu9uQjWuc.png"
           />
           <img
-            src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/DESKTOP_HERO_IMAGE-38Mcagh0542i9qSnCjMUiZ9DInXUWw.png"
-            alt="Woman wearing a deep purple silk saree with antique gold detailing"
+            src="/Elegant%20Ivory%20Saree%20Editorial.png"
+            alt="Woman wearing an elegant ivory and gold silk saree in luxury editorial setting"
             fetchPriority="high"
           />
         </picture>
