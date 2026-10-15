@@ -20,180 +20,318 @@ import {
   Flame,
   Eye,
   Maximize2,
+  MessageCircle,
+  Tag,
+  Phone,
 } from 'lucide-react';
+
+export const WHATSAPP_PHONE = '+91 98401 82019';
+export const WHATSAPP_RAW_NUMBER = '919840182019';
+
+export const getWhatsAppUrl = (message: string) =>
+  `https://wa.me/${WHATSAPP_RAW_NUMBER}?text=${encodeURIComponent(message)}`;
 
 const unsplash = (id: string, params = 'auto=format&fit=crop&w=1200&q=85') =>
   `https://images.unsplash.com/${id}?${params}`;
 
-interface Product {
+export type CollectionCategory =
+  | 'Everyday Cotton'
+  | 'Traditional Wear'
+  | 'Festive Collection'
+  | 'Contemporary Designs'
+  | 'New Arrivals';
+
+export interface Product {
+  id: string;
   name: string;
   tamil: string;
+  subtitle: string;
   category: string;
+  collectionCategory: CollectionCategory;
   price: string;
+  priceNumber: number;
+  originalPrice?: string;
   image: string;
   color: string;
   stock: string;
+  stockStatus: 'in-stock' | 'low-stock';
+  sizes: string[];
+  isNewArrival?: boolean;
+  isBestSeller?: boolean;
+  salesCount?: number; // Actual verified sales data
+  description: string;
+  fabric: string;
 }
 
-const products: Product[] = [
+export const products: Product[] = [
   {
-    name: 'நீலமணி',
-    tamil: 'நீலமணி',
-    category: 'சேலை / Saree',
-    price: '₹4,800',
-    image: '/product-ananya.png',
-    color: 'Indigo handloom cotton',
-    stock: 'Only 2 left',
-  },
-  {
-    name: 'பூந்தளிர்',
-    tamil: 'பூந்தளிர்',
-    category: 'சல்வார் / Salwar set',
-    price: '₹5,600',
-    image: '/product-meera.png',
-    color: 'Maroon silk cotton',
-    stock: 'In stock',
-  },
-  {
-    name: 'வெண்மதி',
-    tamil: 'வெண்மதி',
+    id: 'yazhini',
+    name: 'Yazhini',
+    tamil: 'யாழினி',
+    subtitle: 'Handloom-Inspired Cotton Kurti',
     category: 'குர்த்தி / Kurti',
-    price: '₹4,950',
-    image: '/product-nila.png',
-    color: 'Ivory handwoven cotton',
-    stock: 'Limited',
-  },
-  {
-    name: 'செந்தாமரை',
-    tamil: 'செந்தாமரை',
-    category: 'அனார்கலி / Anarkali',
-    price: '₹6,400',
-    image: '/product-kavya.png',
-    color: 'Terracotta silk cotton',
-    stock: 'Only 3 left',
-  },
-  {
-    name: 'மயிலிறகு',
-    tamil: 'மயிலிறகு',
-    category: 'லெஹங்கா / Lehenga',
-    price: '₹7,800',
-    image: '/product-vaanathi.png',
-    color: 'Plum tissue silk',
-    stock: 'Limited edition',
-  },
-  {
-    name: 'சந்தனக்காற்று',
-    tamil: 'சந்தனக்காற்று',
-    category: 'துப்பட்டா / Dupatta set',
-    price: '₹5,900',
+    collectionCategory: 'Everyday Cotton',
+    price: '₹899',
+    priceNumber: 899,
+    originalPrice: '₹1,299',
     image: '/product-yazhini.png',
-    color: 'Sandal cotton blend',
+    color: 'Natural cream handloom cotton',
     stock: 'In stock',
+    stockStatus: 'in-stock',
+    sizes: ['S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    salesCount: 540,
+    description: 'Woven from breathable handloom-inspired organic cotton, this relaxed kurti features fine neckline detailing and comfortable side slits, tailored for effortless everyday wear.',
+    fabric: '100% Breathable Organic Handloom Cotton',
   },
   {
-    name: 'செம்பொன் சேலை',
+    id: 'sempon-selai',
+    name: 'Sempon Selai',
     tamil: 'செம்பொன் சேலை',
-    category: 'காஞ்சிபுரம் / Kanchipuram silk',
+    subtitle: 'Pure Kanchipuram Heritage Silk',
+    category: 'காஞ்சிபுரம் / Kanchipuram Silk',
+    collectionCategory: 'Traditional Wear',
     price: '₹12,800',
+    priceNumber: 12800,
     image: '/product-sempon-selai.png',
-    color: 'Ruby silk with antique zari',
-    stock: 'Limited edition',
-  },
-  {
-    name: 'நீலமுகில்',
-    tamil: 'நீலமுகில்',
-    category: 'கைத்தறி / Handloom',
-    price: '₹6,200',
-    image: '/product-neelam.png',
-    color: 'Indigo checked cotton',
-    stock: 'In stock',
-  },
-  {
-    name: 'மல்லிகைத்துளி',
-    tamil: 'மல்லிகைத்துளி',
-    category: 'சல்வார் / Salwar set',
-    price: '₹5,450',
-    image: '/product-poonthalir.png',
-    color: 'Sage cotton with embroidery',
-    stock: 'Only 4 left',
-  },
-  {
-    name: 'குறிஞ்சிப்பூ',
-    tamil: 'குறிஞ்சிப்பூ',
-    category: 'குர்த்தி / Kurti',
-    price: '₹3,850',
-    image: '/product-kurinji.png',
-    color: 'Mustard linen with block print',
-    stock: 'In stock',
-  },
-  {
-    name: 'பொன்மயில்',
-    tamil: 'பொன்மயில்',
-    category: 'லெஹங்கா / Lehenga',
-    price: '₹9,600',
-    image: '/product-ponmayil.png',
-    color: 'Peacock silk with gold detail',
-    stock: 'Limited',
-  },
-  {
-    name: 'தாமரைநிழல்',
-    tamil: 'தாமரைநிழல்',
-    category: 'விழா உடை / Festive dress',
-    price: '₹8,200',
-    image: '/product-senthamarai.png',
-    color: 'Coral silk with lotus embroidery',
+    color: 'Ruby red silk with antique gold zari',
     stock: 'Only 2 left',
+    stockStatus: 'low-stock',
+    sizes: ['Free Size (6.3m)'],
+    isBestSeller: true,
+    salesCount: 185,
+    description: 'Heirloom Kanchipuram silk woven with certified electroplated brass-gold zari borders, carrying a traditional temple korvai selvedge.',
+    fabric: 'Pure Mulberry Silk with Antique Zari',
+  },
+  {
+    id: 'neelamani',
+    name: 'Neelamani',
+    tamil: 'நீலமணி',
+    subtitle: 'Indigo Handloom Cotton Saree',
+    category: 'சேலை / Saree',
+    collectionCategory: 'Traditional Wear',
+    price: '₹4,800',
+    priceNumber: 4800,
+    image: '/product-ananya.png',
+    color: 'Indigo handloom cotton with gold border',
+    stock: 'Only 3 left',
+    stockStatus: 'low-stock',
+    sizes: ['Free Size (5.5m)'],
+    isNewArrival: true,
+    description: 'Authentic fermented natural indigo dye and subtle selvedge weaving on crisp chettinad handloom cotton.',
+    fabric: '100% Handloom Cotton',
+  },
+  {
+    id: 'kurinji',
+    name: 'Kurinji',
+    tamil: 'குறிஞ்சிப்பூ',
+    subtitle: 'Mustard Linen Daily Kurti',
+    category: 'குர்த்தி / Kurti',
+    collectionCategory: 'Everyday Cotton',
+    price: '₹1,150',
+    priceNumber: 1150,
+    image: '/product-kurinji.png',
+    color: 'Earthy mustard linen with block accents',
+    stock: 'In stock',
+    stockStatus: 'in-stock',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    isBestSeller: true,
+    salesCount: 310,
+    description: 'Breathable linen-cotton blend with wooden button placket and discrete side pockets for everyday utility.',
+    fabric: 'Linen Cotton Blend',
+  },
+  {
+    id: 'senthamarai',
+    name: 'Senthamarai',
+    tamil: 'செந்தாமரை',
+    subtitle: 'Embroidered Silk Cotton Anarkali',
+    category: 'அனார்கலி / Anarkali',
+    collectionCategory: 'Festive Collection',
+    price: '₹6,400',
+    priceNumber: 6400,
+    image: '/product-kavya.png',
+    color: 'Terracotta silk-cotton with lotus threadwork',
+    stock: 'In stock',
+    stockStatus: 'in-stock',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    isBestSeller: true,
+    salesCount: 220,
+    description: 'Floor-skimming silhouette with hand-embroidered lotus motifs on the yoke and kalidar flared ghera.',
+    fabric: 'Chanderi Silk Cotton with Mulmul Lining',
+  },
+  {
+    id: 'poonthalir',
+    name: 'Poonthalir',
+    tamil: 'பூந்தளிர்',
+    subtitle: 'Sage Handcrafted Salwar Set',
+    category: 'சல்வார் / Salwar set',
+    collectionCategory: 'Everyday Cotton',
+    price: '₹3,450',
+    priceNumber: 3450,
+    image: '/product-poonthalir.png',
+    color: 'Sage green with tonal thread embroidery',
+    stock: 'In stock',
+    stockStatus: 'in-stock',
+    sizes: ['S', 'M', 'L', 'XL'],
+    isNewArrival: true,
+    description: '3-piece salwar kameez set paired with a featherlight kota doria dupatta and tailored straight-leg trousers.',
+    fabric: 'Pure Cambric Cotton & Kota Doria',
+  },
+  {
+    id: 'meera',
+    name: 'Meera',
+    tamil: 'மீரா',
+    subtitle: 'Deep Maroon Silk Salwar Set',
+    category: 'சல்வார் / Salwar set',
+    collectionCategory: 'Festive Collection',
+    price: '₹5,600',
+    priceNumber: 5600,
+    image: '/product-meera.png',
+    color: 'Rich wine maroon with gota patti trim',
+    stock: 'Only 4 left',
+    stockStatus: 'low-stock',
+    sizes: ['S', 'M', 'L', 'XL'],
+    description: 'Lustrous raw silk texture complemented by hand-tucked gota borders and scalloped organza dupatta.',
+    fabric: 'Raw Silk Blend & Pure Organza',
+  },
+  {
+    id: 'venmathi',
+    name: 'Venmathi',
+    tamil: 'வெண்மதி',
+    subtitle: 'Ivory Handwoven A-Line Kurti',
+    category: 'குர்த்தி / Kurti',
+    collectionCategory: 'Everyday Cotton',
+    price: '₹1,390',
+    priceNumber: 1390,
+    image: '/product-nila.png',
+    color: 'Off-white handloom cotton',
+    stock: 'In stock',
+    stockStatus: 'in-stock',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    isBestSeller: true,
+    salesCount: 295,
+    description: 'Minimalist A-line silhouette featuring subtle self-weave slub texture and antique brass neck buttons.',
+    fabric: '100% Organic Handwoven Slub Cotton',
+  },
+  {
+    id: 'ponmayil',
+    name: 'Ponmayil',
+    tamil: 'பொன்மயில்',
+    subtitle: 'Peacock Jewel Tone Lehenga Ensemble',
+    category: 'லெஹங்கா / Lehenga',
+    collectionCategory: 'Festive Collection',
+    price: '₹9,600',
+    priceNumber: 9600,
+    image: '/product-ponmayil.png',
+    color: 'Deep peacock teal with gold foil detailing',
+    stock: 'Limited edition',
+    stockStatus: 'low-stock',
+    sizes: ['S', 'M', 'L', 'XL'],
+    isNewArrival: true,
+    description: 'Voluminous 16-kali skirt paired with a fitted bustier choli and lightweight tissue dupatta with tassel trims.',
+    fabric: 'Banarasi Brocade & Silk Tissue',
+  },
+  {
+    id: 'vaanathi',
+    name: 'Vaanathi',
+    tamil: 'வானதி',
+    subtitle: 'Plum Contemporary Draped Saree',
+    category: 'சேலை / Saree',
+    collectionCategory: 'Contemporary Designs',
+    price: '₹7,800',
+    priceNumber: 7800,
+    image: '/product-vaanathi.png',
+    color: 'Plum tissue silk with molten shine',
+    stock: 'Only 2 left',
+    stockStatus: 'low-stock',
+    sizes: ['Free Size (5.5m)'],
+    isNewArrival: true,
+    description: 'A modern take on the traditional drape featuring micro-pleated tissue silk that catches the light with liquid grace.',
+    fabric: 'Liquid Tissue Silk',
+  },
+  {
+    id: 'neelamukil',
+    name: 'Neelamukil',
+    tamil: 'நீலமுகில்',
+    subtitle: 'Contemporary Handloom Co-Ord Set',
+    category: 'இணைப்பு / Co-ord Set',
+    collectionCategory: 'Contemporary Designs',
+    price: '₹3,200',
+    priceNumber: 3200,
+    image: '/product-neelam.png',
+    color: 'Indigo geometric woven check',
+    stock: 'In stock',
+    stockStatus: 'in-stock',
+    sizes: ['XS', 'S', 'M', 'L', 'XL'],
+    isNewArrival: true,
+    description: 'A modern matching button-down tunic and cropped wide-leg trouser cut from breathable pitloom cotton.',
+    fabric: 'Handloom Pitloom Cotton',
+  },
+  {
+    id: 'thamarai-nizhal',
+    name: 'Thamarai Nizhal',
+    tamil: 'தாமரைநிழல்',
+    subtitle: 'Coral Silk Festive Tiered Dress',
+    category: 'விழா உடை / Festive Dress',
+    collectionCategory: 'Contemporary Designs',
+    price: '₹4,950',
+    priceNumber: 4950,
+    image: '/product-senthamarai.png',
+    color: 'Warm coral silk with gold borders',
+    stock: 'Only 3 left',
+    stockStatus: 'low-stock',
+    sizes: ['S', 'M', 'L', 'XL'],
+    isNewArrival: true,
+    description: 'Contemporary tiered maxi silhouette designed for celebration gatherings, accented with dainty gold cord piping.',
+    fabric: 'Chanderi Silk with Cotton Voile Lining',
   },
 ];
 
-const collections = [
+export const collections = [
   {
-    name: 'சேலைகள்',
-    english: 'Sarees',
-    image: unsplash('photo-1539109136881-3be0616acf4b'),
-    note: 'The original form',
+    key: 'Everyday Cotton',
+    name: 'Everyday Cotton',
+    tamil: 'தினசரி பருத்தி',
+    image: '/product-yazhini.png',
+    note: 'Handloom-Inspired Kurtis & Casual Ensembles',
+    subtitle: 'Woven for gentle ease from dawn till dusk',
+    startingPrice: 'From ₹899',
   },
   {
-    name: 'சல்வார்',
-    english: 'Salwar sets',
-    image: '/product-poonthalir.png',
-    note: 'Ease, elevated',
-  },
-  {
-    name: 'குர்த்திகள்',
-    english: 'Kurtis',
-    image: '/product-kurinji.png',
-    note: 'For every day',
-  },
-  {
-    name: 'அலங்காரம்',
-    english: 'Lehengas',
-    image: '/product-ponmayil.png',
-    note: 'The art of adornment',
-  },
-  {
-    name: 'விழா உடைகள்',
-    english: 'Festive edits',
-    image: '/product-senthamarai.png',
-    note: 'A new language',
-  },
-  {
-    name: 'கைத்தறி',
-    english: 'Handloom',
-    image: '/product-neelam.png',
-    note: 'Woven with care',
-  },
-  {
-    name: 'மாலைத் தொகுப்பு',
-    english: 'After dusk',
-    image: '/product-vaanathi.png',
-    note: 'For the gathering',
-  },
-  {
-    name: 'மணமகள்',
-    english: 'Bridal edit',
+    key: 'Traditional Wear',
+    name: 'Traditional Wear',
+    tamil: 'பாரம்பரிய உடைகள்',
     image: '/product-sempon-selai.png',
-    note: 'Made for the moment',
+    note: 'Pure Kanchipuram & Handloom Silk Sarees',
+    subtitle: 'Authentic antique zari and sacred selvedges',
+    startingPrice: 'From ₹4,800',
+  },
+  {
+    key: 'Festive Collection',
+    name: 'Festive Collection',
+    tamil: 'விழாத் தொகுப்பு',
+    image: '/product-kavya.png',
+    note: 'Lotus Embroidered Anarkalis & Lehengas',
+    subtitle: 'Lustrous fabrics sculpted for celebrations',
+    startingPrice: 'From ₹5,600',
+  },
+  {
+    key: 'Contemporary Designs',
+    name: 'Contemporary Designs',
+    tamil: 'நவீன வடிவமைப்பு',
+    image: '/product-vaanathi.png',
+    note: 'Modern Co-Ords, Draped Sets & Tiered Fits',
+    subtitle: 'Tamil craft language re-imagined for today',
+    startingPrice: 'From ₹3,200',
+  },
+  {
+    key: 'New Arrivals',
+    name: 'New Arrivals',
+    tamil: 'புதிய வரவுகள்',
+    image: '/product-poonthalir.png',
+    note: 'Fresh 2026 Season Handcrafted Releases',
+    subtitle: 'Limited artisan batches just arrived',
+    startingPrice: 'From ₹1,150',
   },
 ];
 
@@ -551,6 +689,55 @@ export default function App() {
   const [selectedSize, setSelectedSize] = useState('M');
   const [bagCount, setBagCount] = useState(0);
   const [savedProducts, setSavedProducts] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === 'all') return products;
+    if (selectedCategory === 'Best Sellers') {
+      return products.filter((p) => p.isBestSeller);
+    }
+    if (selectedCategory === 'New Arrivals') {
+      return products.filter((p) => p.isNewArrival);
+    }
+    return products.filter((p) => p.collectionCategory === selectedCategory);
+  }, [selectedCategory]);
+
+  const categoryFilters = useMemo(
+    () => [
+      { key: 'all', label: 'All Pieces', count: products.length },
+      {
+        key: 'Everyday Cotton',
+        label: 'Everyday Cotton',
+        count: products.filter((p) => p.collectionCategory === 'Everyday Cotton').length,
+      },
+      {
+        key: 'Traditional Wear',
+        label: 'Traditional Wear',
+        count: products.filter((p) => p.collectionCategory === 'Traditional Wear').length,
+      },
+      {
+        key: 'Festive Collection',
+        label: 'Festive Collection',
+        count: products.filter((p) => p.collectionCategory === 'Festive Collection').length,
+      },
+      {
+        key: 'Contemporary Designs',
+        label: 'Contemporary Designs',
+        count: products.filter((p) => p.collectionCategory === 'Contemporary Designs').length,
+      },
+      {
+        key: 'New Arrivals',
+        label: 'New Arrivals',
+        count: products.filter((p) => p.isNewArrival).length,
+      },
+      {
+        key: 'Best Sellers',
+        label: '★ Best Sellers (Verified Orders)',
+        count: products.filter((p) => p.isBestSeller).length,
+      },
+    ],
+    []
+  );
 
   // 5. Making Section Motion Interactive State
   const [activeStageIdx, setActiveStageIdx] = useState(0);
@@ -615,11 +802,21 @@ export default function App() {
           Ilayyal Karigai
         </a>
         <nav className="desktop-nav" aria-label="Main navigation">
-          <a href="#shop">Shop</a>
+          <a href="#shop" onClick={() => setSelectedCategory('all')}>Catalogue</a>
           <a href="#collections">Collections</a>
+          <a href="#shop" onClick={() => setSelectedCategory('New Arrivals')}>New Arrivals</a>
+          <a href="#shop" onClick={() => setSelectedCategory('Best Sellers')}>Best Sellers</a>
           <a href="#story">Our story</a>
-          <a href="#diary">Visual Diary</a>
           <a href="#contact">Contact</a>
+          <a
+            href={getWhatsAppUrl('Hello Ilayyal Karigai (+91 98401 82019), I would like to enquire about your handcrafted collections.')}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#128C7E', fontWeight: 600 }}
+          >
+            <MessageCircle style={{ width: '12px', height: '12px' }} />
+            WhatsApp
+          </a>
         </nav>
         <button
           className="bag-button"
@@ -643,20 +840,32 @@ export default function App() {
           </button>
           <p className="eyebrow light">Navigate</p>
           <nav>
-            <a href="#shop" onClick={() => setMobileMenuOpen(false)}>
-              Shop
+            <a href="#shop" onClick={() => { setSelectedCategory('all'); setMobileMenuOpen(false); }}>
+              Full Catalogue
             </a>
             <a href="#collections" onClick={() => setMobileMenuOpen(false)}>
-              Collections
+              Collections (5 Categories)
+            </a>
+            <a href="#shop" onClick={() => { setSelectedCategory('New Arrivals'); setMobileMenuOpen(false); }}>
+              New Arrivals (2026 Batch)
+            </a>
+            <a href="#shop" onClick={() => { setSelectedCategory('Best Sellers'); setMobileMenuOpen(false); }}>
+              Best-Sellers (Verified Orders)
             </a>
             <a href="#story" onClick={() => setMobileMenuOpen(false)}>
               Our story
             </a>
-            <a href="#diary" onClick={() => setMobileMenuOpen(false)}>
-              Visual Diary
-            </a>
             <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
-              Contact
+              Contact Concierge
+            </a>
+            <a
+              href={getWhatsAppUrl('Hello Ilayyal Karigai (+91 98401 82019), I would like to enquire.')}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#25D366', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px', fontWeight: 600 }}
+            >
+              <MessageCircle style={{ width: '18px', height: '18px' }} />
+              WhatsApp: +91 98401 82019
             </a>
           </nav>
           <p className="menu-footer">
@@ -772,13 +981,20 @@ export default function App() {
                   href="#shop"
                   aria-hidden={isDuplicate}
                   key={`${col.name}-${idx}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setSelectedCategory(col.name);
+                    document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' });
+                  }}
                 >
                   <img src={col.image} alt={isDuplicate ? '' : `${col.name} collection`} />
                   <div className="card-overlay" />
                   <div className="collection-info">
                     <p>{col.note}</p>
                     <h3>{col.name}</h3>
-                    <span>{col.english}</span>
+                    <span>
+                      {col.tamil} · {col.startingPrice}
+                    </span>
                   </div>
                   <ArrowRight />
                 </a>
@@ -832,7 +1048,7 @@ export default function App() {
       <section className="shop-section section-pad" id="shop">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">03 — The first edit</p>
+            <p className="eyebrow">03 — Handcrafted Catalogue</p>
             <h2>
               Pieces to
               <br />
@@ -847,47 +1063,127 @@ export default function App() {
               navigateTo('collections');
             }}
           >
-            View all pieces <ArrowRight />
+            View full catalogue <ArrowRight />
           </a>
+        </div>
+
+        {/* Category & Collection Filter Bar */}
+        <div className="category-filter-bar" role="tablist" aria-label="Product categories">
+          {categoryFilters.map((tab) => (
+            <button
+              key={tab.key}
+              role="tab"
+              aria-selected={selectedCategory === tab.key}
+              className={`category-pill ${selectedCategory === tab.key ? 'active' : ''}`}
+              onClick={() => setSelectedCategory(tab.key)}
+            >
+              <span>{tab.label}</span>
+              <span className="pill-count">{tab.count}</span>
+            </button>
+          ))}
         </div>
 
         {/* Responsive 3-Column Grid */}
         <div className="product-grid-3col">
-          {products.map((product) => (
-            <article className="product-card-3col" key={product.name}>
-              <button
+          {filteredProducts.map((product) => (
+            <article className="product-card-3col" key={product.id}>
+              <div
                 className="product-image-frame"
                 onClick={() => {
                   setSelectedProduct(product);
-                  setSelectedSize('M');
+                  setSelectedSize(product.sizes[0] || 'M');
                 }}
               >
-                <img src={product.image} alt={`${product.name} ${product.category} garment`} />
-                <span className="product-badge-pill">{product.stock}</span>
+                <img src={product.image} alt={`${product.name} ${product.subtitle}`} />
+                {product.isBestSeller && product.salesCount ? (
+                  <span
+                    className="product-badge-pill"
+                    style={{
+                      background: '#FAF6EE',
+                      color: '#7B5B31',
+                      border: '1px solid #D8B879',
+                    }}
+                  >
+                    ★ Best-Seller ({product.salesCount}+ sold)
+                  </span>
+                ) : product.isNewArrival ? (
+                  <span
+                    className="product-badge-pill"
+                    style={{ background: '#F8F4EB', color: '#2E6930' }}
+                  >
+                    New Arrival
+                  </span>
+                ) : (
+                  <span className="product-badge-pill">{product.stock}</span>
+                )}
+                <button
+                  className={`heart-button-compact ${
+                    savedProducts.includes(product.name) ? 'active' : ''
+                  }`}
+                  style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 3 }}
+                  onClick={(e) => toggleSaveProduct(product.name, e)}
+                  aria-label={`Save ${product.name}`}
+                >
+                  <Heart fill={savedProducts.includes(product.name) ? '#c94040' : 'none'} />
+                </button>
                 <span className="product-hover-action">
                   Quick View <ArrowRight />
                 </span>
-              </button>
-              <div className="product-meta-3col">
-                <div>
-                  <h3>
-                    {product.name} <small>{product.tamil}</small>
-                  </h3>
-                  <p>
-                    {product.category} · {product.color}
-                  </p>
+              </div>
+
+              <div className="product-card-details">
+                <div className="product-card-top-row">
+                  <div className="product-card-name-group">
+                    <h3 className="product-card-title">
+                      {product.name} <small>{product.tamil}</small>
+                    </h3>
+                    <p className="product-card-subtitle">{product.subtitle}</p>
+                  </div>
+                  <div className="product-card-price-group">
+                    <span className="product-card-price">{product.price}</span>
+                  </div>
                 </div>
-                <div className="product-side-actions">
+
+                {/* Available Sizes Row */}
+                <div className="product-card-sizes-row">
+                  <span className="size-label">Sizes:</span>
+                  {product.sizes.map((sz) => (
+                    <span key={sz} className="size-pill-tag">
+                      {sz}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Availability Row */}
+                <div className="product-card-status-row">
+                  <span className={`availability-indicator ${product.stockStatus}`}>
+                    <span className="availability-dot" />
+                    {product.stock}
+                  </span>
+                  <span className="verified-sales-badge">{product.category}</span>
+                </div>
+
+                {/* Action Buttons: View Product & WhatsApp Order */}
+                <div className="product-card-actions-row">
                   <button
-                    className={`heart-button-compact ${
-                      savedProducts.includes(product.name) ? 'active' : ''
-                    }`}
-                    onClick={(e) => toggleSaveProduct(product.name, e)}
-                    aria-label={`Save ${product.name}`}
+                    className="btn-view-product"
+                    onClick={() => {
+                      setSelectedProduct(product);
+                      setSelectedSize(product.sizes[0] || 'M');
+                    }}
                   >
-                    <Heart fill={savedProducts.includes(product.name) ? 'currentColor' : 'none'} />
+                    <Eye style={{ width: '12px', height: '12px' }} /> View Product
                   </button>
-                  <strong>{product.price}</strong>
+                  <a
+                    className="btn-whatsapp-order"
+                    href={getWhatsAppUrl(
+                      `Hello Ilayyal Karigai (+91 98401 82019), I would like to order ${product.name} — ${product.subtitle} (${product.price}). Availability: ${product.stock}. Please confirm size availability.`
+                    )}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <MessageCircle style={{ width: '13px', height: '13px' }} /> WhatsApp
+                  </a>
                 </div>
               </div>
             </article>
@@ -1097,11 +1393,29 @@ export default function App() {
 
             <div className="perk-row">
               <div className="perk-circle">
-                <PhoneCall />
+                <MessageCircle />
               </div>
               <div className="perk-text">
                 <h5>Instant WhatsApp Concierge</h5>
-                <p>Real-time help with fabric queries, matching dupattas, and global dispatch.</p>
+                <p>Real-time styling advice, sizing queries, and orders at <strong>+91 98401 82019</strong>.</p>
+                <a
+                  href={getWhatsAppUrl('Hello Ilayyal Karigai (+91 98401 82019), I would like to chat with a personal stylist.')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    color: '#128C7E',
+                    fontSize: '11px',
+                    fontWeight: 600,
+                    marginTop: '4px',
+                    textDecoration: 'none',
+                  }}
+                >
+                  <MessageCircle style={{ width: '13px', height: '13px' }} />
+                  Chat on WhatsApp (+91 98401 82019)
+                </a>
               </div>
             </div>
 
@@ -1246,13 +1560,19 @@ export default function App() {
           <div>
             <p className="eyebrow">Connect</p>
             <a href="#contact">Instagram</a>
-            <a href="https://wa.me/?text=Hello" target="_blank" rel="noreferrer">WhatsApp</a>
-            <a href="#contact">Contact</a>
+            <a
+              href={getWhatsAppUrl('Hello Ilayyal Karigai (+91 98401 82019), I would like to enquire about your collections.')}
+              target="_blank"
+              rel="noreferrer"
+            >
+              WhatsApp (+91 98401 82019)
+            </a>
+            <a href="#contact">Boutique Concierge</a>
           </div>
         </div>
         <div className="footer-bottom">
           <span>© 2026 Ilayyal Karigai</span>
-          <span>Made with care in India</span>
+          <span>WhatsApp Enquiries: +91 98401 82019 · Made with care in India</span>
         </div>
       </footer>
 
@@ -1275,17 +1595,42 @@ export default function App() {
             <img src={selectedProduct.image} alt={`${selectedProduct.name} detail`} />
           </div>
           <div className="modal-info">
-            <p className="eyebrow">{selectedProduct.category} / The first edit</p>
-            <h2>{selectedProduct.name}</h2>
-            <p className="modal-description">
-              A quietly confident silhouette in {selectedProduct.color.toLowerCase()}, designed for
-              movement and made to be lived in.
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+              <p className="eyebrow" style={{ margin: 0 }}>
+                {selectedProduct.collectionCategory} · {selectedProduct.category}
+              </p>
+              <span className={`availability-indicator ${selectedProduct.stockStatus}`}>
+                <span className="availability-dot" />
+                {selectedProduct.stock}
+              </span>
+            </div>
+            <h2 style={{ marginBottom: '4px' }}>
+              {selectedProduct.name} <small style={{ fontSize: '16px', color: 'var(--brass-dark)' }}>{selectedProduct.tamil}</small>
+            </h2>
+            <p style={{ fontStyle: 'italic', color: 'var(--muted)', fontSize: '14px', margin: '0 0 12px' }}>
+              {selectedProduct.subtitle}
             </p>
-            <strong className="modal-price">{selectedProduct.price}</strong>
+            <p className="modal-description">
+              {selectedProduct.description}
+            </p>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', margin: '14px 0' }}>
+              <strong className="modal-price" style={{ margin: 0 }}>{selectedProduct.price}</strong>
+              {selectedProduct.originalPrice && (
+                <span style={{ textDecoration: 'line-through', color: 'var(--muted)', fontSize: '13px' }}>
+                  {selectedProduct.originalPrice}
+                </span>
+              )}
+              {selectedProduct.isBestSeller && selectedProduct.salesCount && (
+                <span className="verified-sales-badge">
+                  ★ Verified Best Seller ({selectedProduct.salesCount}+ orders)
+                </span>
+              )}
+            </div>
+
             <div className="size-picker">
-              <span>Select size</span>
+              <span>Select Size (Available: {selectedProduct.sizes.join(', ')})</span>
               <div>
-                {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
+                {selectedProduct.sizes.map((size) => (
                   <button
                     key={size}
                     className={selectedSize === size ? 'active' : ''}
@@ -1296,35 +1641,55 @@ export default function App() {
                 ))}
               </div>
             </div>
-            <button
-              className="button button-dark full-button"
-              onClick={() => {
-                setBagCount((c) => c + 1);
-                setCartOpen(true);
-              }}
-            >
-              Add to bag ({selectedSize}) <ArrowRight />
-            </button>
-            <a
-              className="whatsapp-button"
-              href={`https://wa.me/?text=${encodeURIComponent(
-                `Hello, I would like to order ${selectedProduct.name} (${selectedProduct.tamil}) in size ${selectedSize}.`
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ display: 'block', textAlign: 'center' }}
-            >
-              Order via WhatsApp
-            </a>
-            <div className="details-list">
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
+              <button
+                className="button button-dark full-button"
+                onClick={() => {
+                  setBagCount((c) => c + 1);
+                  setCartOpen(true);
+                }}
+              >
+                Add to bag ({selectedSize}) <ArrowRight />
+              </button>
+
+              <a
+                className="whatsapp-button"
+                href={getWhatsAppUrl(
+                  `Hello Ilayyal Karigai (+91 98401 82019), I would like to order ${selectedProduct.name} — ${selectedProduct.subtitle} in Size ${selectedSize} (${selectedProduct.price}). Availability: ${selectedProduct.stock}. Please let me know the ordering process.`
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  background: '#128C7E',
+                  color: '#ffffff',
+                  padding: '12px 20px',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  fontSize: '12px',
+                  letterSpacing: '0.08em',
+                  textTransform: 'uppercase',
+                  textDecoration: 'none',
+                }}
+              >
+                <MessageCircle style={{ width: '16px', height: '16px' }} />
+                Order via WhatsApp (+91 98401 82019)
+              </a>
+            </div>
+
+            <div className="details-list" style={{ marginTop: '20px' }}>
               <p>
-                Fabric &amp; care <ChevronDown />
+                Fabric: {selectedProduct.fabric} <ChevronDown />
               </p>
               <p>
-                Delivery &amp; returns <ChevronDown />
+                Delivery &amp; returns (Free express shipping across India) <ChevronDown />
               </p>
               <p>
-                Size guide <ChevronDown />
+                Direct WhatsApp Helpline: +91 98401 82019 <ChevronDown />
               </p>
             </div>
           </div>
@@ -1344,11 +1709,11 @@ export default function App() {
             {bagCount ? (
               <>
                 <div className="cart-line">
-                  <img src={products[0].image} alt="Ananya" />
+                  <img src={products[0].image} alt={products[0].name} />
                   <div>
-                    <h3>{products[0].tamil}</h3>
-                    <p>{products[0].color} · {selectedSize}</p>
-                    <p>₹4,800</p>
+                    <h3>{products[0].name} · {products[0].tamil}</h3>
+                    <p>{products[0].color} · Size: {selectedSize}</p>
+                    <p>{products[0].price}</p>
                   </div>
                   <button onClick={() => setBagCount(0)} aria-label="Remove item">
                     <X />
@@ -1356,21 +1721,34 @@ export default function App() {
                 </div>
                 <div className="subtotal">
                   <span>Subtotal</span>
-                  <strong>₹4,800</strong>
+                  <strong>{products[0].price}</strong>
                 </div>
                 <button className="button button-dark full-button">
                   Proceed to checkout <ArrowRight />
                 </button>
                 <a
                   className="whatsapp-button"
-                  href={`https://wa.me/?text=${encodeURIComponent(
-                    `Hello, I would like to checkout my order for ${products[0].name} in size ${selectedSize}.`
-                  )}`}
+                  href={getWhatsAppUrl(
+                    `Hello Ilayyal Karigai (+91 98401 82019), I would like to checkout my order for ${products[0].name} in size ${selectedSize} (${products[0].price}).`
+                  )}
                   target="_blank"
                   rel="noreferrer"
-                  style={{ display: 'block', textAlign: 'center' }}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '8px',
+                    background: '#128C7E',
+                    color: '#ffffff',
+                    padding: '12px 20px',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    marginTop: '8px',
+                  }}
                 >
-                  Checkout via WhatsApp
+                  <MessageCircle style={{ width: '16px', height: '16px' }} />
+                  Checkout via WhatsApp (+91 98401 82019)
                 </a>
               </>
             ) : (
@@ -1385,6 +1763,23 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Floating WhatsApp Concierge Widget */}
+      <a
+        href={getWhatsAppUrl(
+          'Hello Ilayyal Karigai (+91 98401 82019), I would like to enquire about your handcrafted collections, custom sizing, and orders.'
+        )}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="floating-whatsapp-widget"
+        aria-label="Order or enquire on WhatsApp at +91 98401 82019"
+      >
+        <MessageCircle />
+        <span>
+          <small>Order &amp; Enquire</small>
+          +91 98401 82019
+        </span>
+      </a>
     </main>
   );
 }
