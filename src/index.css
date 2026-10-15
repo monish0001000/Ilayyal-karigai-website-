@@ -93,6 +93,7 @@ button {
   background: var(--warm);
   border-bottom: 1px solid rgba(26, 22, 19, 0.12);
   box-shadow: 0 2px 14px rgba(35, 30, 24, 0.05);
+  isolation: isolate;
 }
 
 .wordmark {
@@ -196,14 +197,15 @@ button {
    1. HERO SECTION: Luxury Editorial Indian Fashion Campaign
    ============================================================ */
 .hero {
-  height: 100vh;
-  height: 100svh;
-  min-height: 100vh;
-  min-height: 100dvh;
-  margin-top: -58px;
+  height: calc(100vh - 58px);
+  height: calc(100svh - 58px);
+  min-height: calc(100vh - 58px);
+  min-height: 560px;
+  margin-top: 0;
   position: relative;
   background: #200606;
   overflow: hidden;
+  isolation: isolate;
 }
 
 .hero-picture {
@@ -253,7 +255,7 @@ button {
 
 .hero-content {
   position: absolute;
-  top: calc(50% + 29px);
+  top: 50%;
   bottom: auto;
   left: var(--gutter);
   transform: translateY(-50%);
@@ -2305,6 +2307,7 @@ button {
     box-shadow: 0 2px 14px rgba(35, 30, 24, 0.08);
     padding: 10px 5vw;
     height: 52px;
+    isolation: isolate;
   }
   .menu-toggle {
     display: flex;
@@ -2351,11 +2354,12 @@ button {
     display: none;
   }
   .hero {
-    height: 100vh;
-    height: 100svh;
-    min-height: 100vh;
-    min-height: 100dvh;
-    margin-top: -52px;
+    height: calc(100vh - 52px);
+    height: calc(100svh - 52px);
+    min-height: calc(100dvh - 52px);
+    min-height: 520px;
+    margin-top: 0;
+    isolation: isolate;
   }
   .hero-picture img {
     object-position: center 8%;
@@ -2368,7 +2372,7 @@ button {
   }
   .hero-content {
     position: absolute;
-    top: calc(50% + 26px);
+    top: 50%;
     bottom: auto;
     left: clamp(20px, 6vw, 36px);
     right: auto;
