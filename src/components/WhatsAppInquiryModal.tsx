@@ -30,7 +30,7 @@ export const WhatsAppInquiryModal: React.FC<WhatsAppInquiryModalProps> = ({
 
   const getWhatsAppMessage = () => {
     return (
-      `Hello Ilayal Karigai (+91 98401 82019), I would like to enquire about purchasing this handcrafted piece:\n\n` +
+      `Hello ELAIYAL KARIGAI (+91 98401 82019), I would like to enquire about purchasing this handcrafted piece:\n\n` +
       `✦ Product: ${product.name} (${product.tamil})\n` +
       `✦ SKU Reference: IK-${product.id.toUpperCase()}\n` +
       `✦ Price: ${product.price}\n` +

@@ -1,7 +1,9 @@
 import { AdminUser, AuthSession } from '../types';
 
-const SESSION_STORAGE_KEY = 'ilayal_admin_session';
-const ADMIN_STORE_KEY = 'ilayal_admin_credentials';
+const SESSION_STORAGE_KEY = 'elaiyal_admin_session';
+const LEGACY_SESSION_STORAGE_KEY = 'ilayal_admin_session';
+const ADMIN_STORE_KEY = 'elaiyal_admin_credentials';
+const LEGACY_ADMIN_STORE_KEY = 'ilayal_admin_credentials';
 
 // Helper: Secure SHA-256 with salt using Web Crypto API
 async function hashPassword(password: string, salt: string): Promise<string> {
@@ -22,12 +24,22 @@ interface StoredAdminAccount {
   createdAt: string;
 }
 
-// Default initial admin account salt and hash for "admin@ilayalkarigai.com" / "Ilayal@Admin2026!"
+// Default initial admin account salt and hash for "admin@elaiyalkarigai.com" / "Elaiyal@Admin2026!"
 // Pre-computed with salt: "ik_salt_2026_heritage"
 const DEFAULT_SALT = 'ik_salt_2026_heritage';
-// Hash of "ik_salt_2026_heritage:Ilayal@Admin2026!"
+
 const INITIAL_ADMIN: StoredAdminAccount = {
   id: 'admin-1',
+  email: 'admin@elaiyalkarigai.com',
+  name: 'Store Administrator',
+  role: 'super_admin',
+  salt: DEFAULT_SALT,
+  passwordHash: 'c67e5e5643ac39ad16e2112e2024cb290347f19071370c84e82bfaa34e081512',
+  createdAt: '2026-01-01T00:00:00.000Z',
+};
+
+const LEGACY_ADMIN: StoredAdminAccount = {
+  id: 'admin-legacy',
   email: 'admin@ilayalkarigai.com',
   name: 'Store Administrator',
   role: 'super_admin',
@@ -44,28 +56,29 @@ class AuthService {
     if (this.isInitialized) return;
     if (typeof window === 'undefined') return;
 
-    // Verify or seed initial admin account
+    // Verify or seed initial admin accounts
     try {
-      const stored = localStorage.getItem(ADMIN_STORE_KEY);
+      const stored = localStorage.getItem(ADMIN_STORE_KEY) || localStorage.getItem(LEGACY_ADMIN_STORE_KEY);
       if (!stored) {
-        // Pre-compute and verify the default hash to guarantee exact match
-        const computed = await hashPassword('Ilayal@Admin2026!', DEFAULT_SALT);
-        INITIAL_ADMIN.passwordHash = computed;
-        localStorage.setItem(ADMIN_STORE_KEY, JSON.stringify([INITIAL_ADMIN]));
+        localStorage.setItem(ADMIN_STORE_KEY, JSON.stringify([INITIAL_ADMIN, LEGACY_ADMIN]));
       }
     } catch (e) {
       console.warn('Failed to initialize admin credentials store:', e);
     }
 
-    // Check existing session in sessionStorage
+    // Check existing session in sessionStorage or localStorage
     try {
-      const sessionRaw = sessionStorage.getItem(SESSION_STORAGE_KEY);
+      const sessionRaw =
+        sessionStorage.getItem(SESSION_STORAGE_KEY) ||
+        sessionStorage.getItem(LEGACY_SESSION_STORAGE_KEY) ||
+        localStorage.getItem(SESSION_STORAGE_KEY);
       if (sessionRaw) {
         const session = JSON.parse(sessionRaw) as AuthSession;
         if (session && session.expiresAt > Date.now()) {
           this.currentSession = session;
         } else {
           sessionStorage.removeItem(SESSION_STORAGE_KEY);
+          sessionStorage.removeItem(LEGACY_SESSION_STORAGE_KEY);
           this.currentSession = null;
         }
       }

@@ -188,7 +188,7 @@ export const CollectionsPage: React.FC<CollectionsPageProps> = ({
 
         <div className="archive-brand-center">
           <h1 className="brand-wordmark-title" onClick={onNavigateHome}>
-            {locale === 'ta' ? 'இளையள் காரிகை' : 'ILAYAL KARIGAI'}
+            {locale === 'ta' ? 'இளையள் காரிகை' : 'ELAIYAL KARIGAI'}
           </h1>
         </div>
 

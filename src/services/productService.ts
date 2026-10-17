@@ -261,7 +261,8 @@ export const INITIAL_PRODUCTS: Product[] = [
   },
 ];
 
-const STORAGE_KEY = 'ilayal_karigai_products';
+const STORAGE_KEY = 'elaiyal_karigai_products';
+const LEGACY_STORAGE_KEY = 'ilayal_karigai_products';
 type Listener = () => void;
 const listeners = new Set<Listener>();
 
@@ -283,7 +284,7 @@ class ProductService {
     if (typeof window === 'undefined') return INITIAL_PRODUCTS;
 
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         if (Array.isArray(parsed) && parsed.length > 0) {

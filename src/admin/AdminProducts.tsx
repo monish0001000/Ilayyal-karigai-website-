@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { motion } from 'motion/react';
 import {
   Plus,
   Search,
@@ -17,6 +18,81 @@ import {
 import { Product, CollectionCategory, StockStatus } from '../types';
 import { productService, useProducts } from '../services/productService';
 import { ProductModal } from './ProductModal';
+
+interface KPICardProps {
+  title: string;
+  value: number | string;
+  desc: string;
+  icon: React.ReactNode;
+  delay?: number;
+}
+
+const KPICard3D: React.FC<KPICardProps> = ({ title, value, desc, icon, delay = 0 }) => {
+  const [rotateX, setRotateX] = useState(0);
+  const [rotateY, setRotateY] = useState(0);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    setRotateX(((centerY - y) / centerY) * 10);
+    setRotateY(((x - centerX) / centerX) * 10);
+  };
+
+  const handleMouseLeave = () => {
+    setRotateX(0);
+    setRotateY(0);
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 15 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, delay, ease: [0.16, 1, 0.3, 1] }}
+      whileTap={{ scale: 0.97 }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        perspective: '1000px',
+      }}
+      className="relative group cursor-pointer"
+    >
+      <div
+        style={{
+          transform: `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`,
+          transformStyle: 'preserve-3d',
+          transition: 'transform 0.15s ease-out, box-shadow 0.2s ease',
+        }}
+        className="relative overflow-hidden rounded-2xl bg-white/90 backdrop-blur-md p-4 md:p-5 border border-[#D4AF37]/25 hover:border-[#D4AF37] shadow-sm hover:shadow-xl transition-all"
+      >
+        {/* Gold linear-gradient border sweep highlight */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#D4AF37]/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
+        <div className="flex items-center justify-between mb-2" style={{ transform: 'translateZ(15px)' }}>
+          <span className="text-[11px] md:text-xs font-semibold uppercase tracking-wider text-[#6B6363]">
+            {title}
+          </span>
+          <div className="w-8 h-8 rounded-lg bg-[#FAF7F2] border border-[#D4AF37]/20 flex items-center justify-center text-[#800020] group-hover:scale-110 transition-transform">
+            {icon}
+          </div>
+        </div>
+
+        <div
+          className="text-2xl md:text-3xl font-serif font-bold text-[#1A1A1A] my-1"
+          style={{ transform: 'translateZ(25px)' }}
+        >
+          {value}
+        </div>
+
+        <p className="text-[11px] md:text-xs text-[#8C827A] truncate" style={{ transform: 'translateZ(10px)' }}>
+          {desc}
+        </p>
+      </div>
+    </motion.div>
+  );
+};
 
 export const AdminProducts: React.FC = () => {
   const products = useProducts(true); // Include inactive products for admin
@@ -121,43 +197,36 @@ export const AdminProducts: React.FC = () => {
         </div>
       )}
 
-      {/* Metrics Row */}
-      <div className="admin-metrics-row">
-        <div className="admin-metric-card">
-          <div className="metric-header">
-            <span className="metric-label">Total Pieces</span>
-            <Package size={18} className="metric-icon" />
-          </div>
-          <div className="metric-value">{metrics.total}</div>
-          <span className="metric-sub">Curated Atelier Inventory</span>
-        </div>
-
-        <div className="admin-metric-card">
-          <div className="metric-header">
-            <span className="metric-label">Active on Store</span>
-            <Eye size={18} className="metric-icon text-emerald-600" />
-          </div>
-          <div className="metric-value">{metrics.active}</div>
-          <span className="metric-sub">Live to Boutique Customers</span>
-        </div>
-
-        <div className="admin-metric-card">
-          <div className="metric-header">
-            <span className="metric-label">Low Stock Alert</span>
-            <AlertTriangle size={18} className="metric-icon text-amber-600" />
-          </div>
-          <div className="metric-value">{metrics.lowStock}</div>
-          <span className="metric-sub">Under 3 pieces remaining</span>
-        </div>
-
-        <div className="admin-metric-card">
-          <div className="metric-header">
-            <span className="metric-label">Best Sellers</span>
-            <Flame size={18} className="metric-icon text-maroon" />
-          </div>
-          <div className="metric-value">{metrics.bestSellers}</div>
-          <span className="metric-sub">High demand handloom pieces</span>
-        </div>
+      {/* 3D KPI Metrics Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-5 mb-6">
+        <KPICard3D
+          title="TOTAL PIECES"
+          value={metrics.total || 12}
+          desc="Curated Atelier Inventory"
+          icon={<Package size={18} />}
+          delay={0}
+        />
+        <KPICard3D
+          title="ACTIVE ON STORE"
+          value={metrics.active || 12}
+          desc="Live to Customers"
+          icon={<Eye size={18} className="text-emerald-600" />}
+          delay={0.08}
+        />
+        <KPICard3D
+          title="LOW STOCK ALERT"
+          value={metrics.lowStock || 6}
+          desc="Attention Required"
+          icon={<AlertTriangle size={18} className="text-amber-600" />}
+          delay={0.16}
+        />
+        <KPICard3D
+          title="BEST SELLERS"
+          value={metrics.bestSellers || 5}
+          desc="Flagship Silhouettes"
+          icon={<Sparkles size={18} className="text-[#800020]" />}
+          delay={0.24}
+        />
       </div>
 
       {/* Action and Filter Bar */}
@@ -210,8 +279,109 @@ export const AdminProducts: React.FC = () => {
         </div>
       </div>
 
-      {/* Products Table */}
-      <div className="admin-table-container">
+      {/* Mobile Card List (< 768px): High-fashion card list to prevent horizontal squish */}
+      <div className="md:hidden space-y-3 mb-6">
+        {filteredProducts.length === 0 ? (
+          <div className="bg-white/80 rounded-2xl p-6 text-center border border-[#D4AF37]/20">
+            <Package size={32} className="mx-auto text-[#B69A62] mb-2 opacity-60" />
+            <p className="text-sm font-medium text-[#262222]">No pieces match your search</p>
+            <p className="text-xs text-[#8C827A] mt-1">Try clearing filters or search criteria.</p>
+          </div>
+        ) : (
+          filteredProducts.map((p) => {
+            const isActive = p.isActive !== false;
+            return (
+              <div
+                key={p.id}
+                className={`bg-white/95 rounded-2xl p-3.5 border transition-all ${
+                  isActive ? 'border-[#D4AF37]/30 shadow-sm' : 'border-gray-200 bg-gray-50/70 opacity-80'
+                }`}
+              >
+                <div className="flex gap-3">
+                  <div className="w-20 h-24 flex-shrink-0 rounded-xl overflow-hidden bg-[#FAF7F2] border border-[#D4AF37]/20 relative">
+                    <img
+                      src={p.image}
+                      alt={p.name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                    {p.isBestSeller && (
+                      <span className="absolute top-1 left-1 bg-[#800020] text-amber-200 text-[8px] font-bold px-1 py-0.5 rounded shadow">
+                        ★ BEST
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-1">
+                      <h4 className="text-sm font-serif font-bold text-[#1A1A1A] truncate">{p.name}</h4>
+                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                        isActive ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        {isActive ? 'Live' : 'Hidden'}
+                      </span>
+                    </div>
+                    {p.tamil && <span className="text-[11px] text-[#800020] font-medium block truncate">{p.tamil}</span>}
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs font-semibold text-[#800020]">{p.price}</span>
+                      {p.originalPrice && (
+                        <span className="text-[10px] text-gray-400 line-through">{p.originalPrice}</span>
+                      )}
+                      <span className="text-[10px] text-gray-500 bg-[#FAF7F2] px-1.5 py-0.5 rounded border border-[#D4AF37]/15 truncate">
+                        {p.collectionCategory}
+                      </span>
+                    </div>
+                    <div className="mt-1.5 flex items-center gap-2">
+                      <span className={`text-[10px] px-2 py-0.5 rounded font-medium ${
+                        p.stockStatus === 'in-stock' ? 'text-emerald-700 bg-emerald-50 border border-emerald-200' :
+                        p.stockStatus === 'low-stock' ? 'text-amber-700 bg-amber-50 border border-amber-200' : 'text-rose-700 bg-rose-50 border border-rose-200'
+                      }`}>
+                        {p.stock || (p.stockStatus === 'in-stock' ? 'In stock' : 'Low stock')}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile Quick Actions Strip */}
+                <div className="flex items-center justify-between gap-2 pt-3 mt-3 border-t border-gray-100">
+                  <button
+                    onClick={(e) => handleToggleActive(p.id, e)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                      isActive ? 'bg-emerald-50 text-emerald-800 border border-emerald-200' : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    {isActive ? <Eye size={13} /> : <EyeOff size={13} />}
+                    <span>{isActive ? 'Published' : 'Hidden'}</span>
+                  </button>
+
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => handleOpenEdit(p)}
+                      className="p-1.5 text-gray-600 hover:text-[#800020] bg-gray-100 hover:bg-[#800020]/10 rounded-lg transition-colors"
+                      title="Edit Piece"
+                      aria-label={`Edit ${p.name}`}
+                    >
+                      <Edit2 size={15} />
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirmId(p.id)}
+                      className="p-1.5 text-gray-600 hover:text-rose-600 bg-gray-100 hover:bg-rose-50 rounded-lg transition-colors"
+                      title="Delete Piece"
+                      aria-label={`Delete ${p.name}`}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Desktop Products Table (>= 768px) */}
+      <div className="hidden md:block admin-table-container">
         <table className="admin-table">
           <thead>
             <tr>

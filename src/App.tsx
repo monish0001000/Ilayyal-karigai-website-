@@ -571,6 +571,14 @@ export default function App() {
   const [savedProducts, setSavedProducts] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [inquiryProduct, setInquiryProduct] = useState<Product | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  const triggerToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 3500);
+  };
 
   const homeFilterCategories = useMemo<CategoryFilterItem[]>(
     () => [
@@ -792,6 +800,21 @@ export default function App() {
             transition={{ duration: 0.4 }}
           >
             <main className="site-shell">
+              {/* Toast Notification */}
+              <AnimatePresence>
+                {toastMessage && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                    className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-[#800020] text-[#FAF7F2] border border-[#D4AF37]/50 shadow-2xl px-5 py-3 rounded-full flex items-center gap-2.5 text-xs font-medium tracking-wide"
+                  >
+                    <CheckCircle2 size={16} className="text-[#D4AF37]" />
+                    <span>{toastMessage}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
       {/* Navigation Header */}
       <header className="site-header">
         <button
@@ -802,7 +825,7 @@ export default function App() {
           <Menu />
         </button>
         <a className="wordmark" href="#top">
-          Ilayal Karigai
+          {locale === 'ta' ? 'இளையள் காரிகை' : 'ELAIYAL KARIGAI'}
         </a>
         <nav className="desktop-nav hidden md:flex items-center space-x-8" aria-label="Main navigation">
           <a href="#shop" onClick={() => setSelectedCategory('all')}>{t.nav.catalogue}</a>
@@ -894,7 +917,7 @@ export default function App() {
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <span className="font-serif text-sm tracking-widest text-[#800020] uppercase font-semibold">
-                    Ilayal Karigai
+                    {locale === 'ta' ? 'இளையள் காரிகை' : 'ELAIYAL KARIGAI'}
                   </span>
                   <button
                     className="p-1.5 rounded-full text-[#1A1A1A] hover:bg-[#1A1A1A]/5 transition-colors cursor-pointer"
@@ -1023,7 +1046,7 @@ export default function App() {
 
                 <div className="mt-6 pt-4 border-t border-[#D4AF37]/25 space-y-2">
                   <a
-                    href={getWhatsAppUrl('Hello Ilayal Karigai (+91 98401 82019), I would like to enquire.')}
+                    href={getWhatsAppUrl('Hello ELAIYAL KARIGAI (+91 98401 82019), I would like to enquire.')}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center gap-2 text-[#25D366] font-semibold text-xs py-1"
@@ -1052,7 +1075,7 @@ export default function App() {
       {/* ============================================================
           1. HERO SECTION: Continuous Full-Width Luxury Fashion Campaign
           ============================================================ */}
-      <section className="hero" id="top" aria-label="Ilayal Karigai Campaign">
+      <section className="hero" id="top" aria-label="ELAIYAL KARIGAI Campaign">
         {/* Continuous Full-Width Background Fashion Image Layer */}
         <div className="hero-bg-layer" aria-hidden="true">
           <picture className="hero-picture">
@@ -1066,7 +1089,7 @@ export default function App() {
             />
             <img
               src="/Elegant%20Ivory%20Saree%20Editorial.png"
-              alt="Ilayal Karigai woman wearing handcrafted saree with antique gold border in rich maroon editorial setting"
+              alt="ELAIYAL KARIGAI woman wearing handcrafted saree with antique gold border in rich maroon editorial setting"
               fetchPriority="high"
               className="hero-bg-img"
             />
@@ -1132,7 +1155,7 @@ export default function App() {
 
       {/* Intro Strip in Pure Clean Background */}
       <section className="intro-strip">
-        <p className="eyebrow">{locale === 'ta' ? 'இளையள் காரிகை / 2026' : 'ILAYYAL KARIGAI / 2026'}</p>
+        <p className="eyebrow">{locale === 'ta' ? 'இளையள் காரிகை / 2026' : 'ELAIYAL KARIGAI / 2026'}</p>
         <p className="intro-copy">
           {locale === 'ta' ? (
             <>
@@ -1290,9 +1313,11 @@ export default function App() {
                 setSelectedSize(p.sizes[0] || 'M');
               }}
               onAddToCart={(p, size, e) => {
+                if (p.stockStatus === 'out-of-stock') return;
                 setSelectedProduct(p);
                 setSelectedSize(size);
                 setBagCount((c) => c + 1);
+                triggerToast(`Added to Bag — ${p.name}`);
                 setCartOpen(true);
               }}
               onOpenWhatsAppInquiry={(p) => setInquiryProduct(p)}
@@ -1323,7 +1348,7 @@ export default function App() {
         <div className="limited-bottom-blend" />
 
         <div className="limited-content-left">
-          <p className="eyebrow light">The Ilayyal Karigai promise</p>
+          <p className="eyebrow light">The ELAIYAL KARIGAI promise</p>
           <h2>
             Made in
             <br />
@@ -1450,12 +1475,12 @@ export default function App() {
           <p>
             Follow our studio journey
             <br />
-            <a href="#contact">@ilayyalkarigai</a>
+            <a href="#contact">@elaiyalkarigai</a>
           </p>
         </div>
 
         {/* Artistic Editorial Collage */}
-        <div className="artistic-collage-grid" aria-label="Ilayyal Karigai Visual Diary Collage">
+        <div className="artistic-collage-grid" aria-label="ELAIYAL KARIGAI Visual Diary Collage">
           {visualDiaryCollage.map((item, idx) => (
             <div className="collage-art-card" key={idx}>
               <img src={item.image} alt={item.title} />
@@ -1475,174 +1500,141 @@ export default function App() {
       </section>
 
       {/* ============================================================
-          7. CONTACT SECTION: Redesigned High-End Concierge UI/UX
+          7. CONTACT SECTION: Single Modern Card Layout
           ============================================================ */}
-      <section className="contact-section-redesigned" id="contact">
-        <div className="contact-brand-column">
-          <p className="eyebrow">06 — Private Concierge</p>
-          <h2>
-            Begin a
-            <br />
-            <em>conversation.</em>
-          </h2>
-          <p>
-            For private draping appointments, bridal trousseau consultations, or bespoke styling,
-            our personal atelier team is delighted to welcome you.
-          </p>
+      <section className="py-20 md:py-28 px-4 relative overflow-hidden" id="contact" style={{ background: 'linear-gradient(180deg, #FAF7F2 0%, #F5EFEB 100%)' }}>
+        {/* Subtle background ambient golden light glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[520px] h-[520px] bg-[#D4AF37]/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="atelier-perks-list">
-            <div className="perk-row">
-              <div className="perk-circle">
-                <Calendar />
-              </div>
-              <div className="perk-text">
-                <h5>Private Studio Appointments</h5>
-                <p>One-on-one drape appointments in Chennai &amp; worldwide virtual fittings.</p>
-              </div>
-            </div>
+        <div className="max-w-xl mx-auto rounded-3xl p-6 md:p-10 bg-white/70 backdrop-blur-xl border border-[#D4AF37]/30 shadow-2xl relative overflow-hidden transition-all duration-300">
+          {/* Subtle luxury corner accents */}
+          <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-[#D4AF37]/15 to-transparent pointer-events-none rounded-tr-3xl" />
+          <div className="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-[#800020]/10 to-transparent pointer-events-none rounded-bl-3xl" />
 
-            <div className="perk-row">
-              <div className="perk-circle">
-                <MessageCircle />
-              </div>
-              <div className="perk-text">
-                <h5>Instant WhatsApp Concierge</h5>
-                <p>Real-time styling advice, sizing queries, and orders at <strong>+91 98401 82019</strong>.</p>
-                <a
-                  href={getWhatsAppUrl('Hello Ilayyal Karigai (+91 98401 82019), I would like to chat with a personal stylist.')}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    color: '#128C7E',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    marginTop: '4px',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <MessageCircle style={{ width: '13px', height: '13px' }} />
-                  Chat on WhatsApp (+91 98401 82019)
-                </a>
-              </div>
+          {/* Header */}
+          {/* Header */}
+          <div className="text-center mb-8 relative z-10 flex flex-col items-center justify-center">
+            {/* Direct Atelier Desk with pulsating gold dot */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF7F2] border border-[#D4AF37]/40 text-[#800020] text-xs font-semibold tracking-wider uppercase mb-3 shadow-sm">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4AF37] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#D4AF37]"></span>
+              </span>
+              Direct Atelier Desk
             </div>
-
-            <div className="perk-row">
-              <div className="perk-circle">
-                <Clock />
-              </div>
-              <div className="perk-text">
-                <h5>Swift Response Guarantee</h5>
-                <p>All personal atelier enquiries acknowledged within 2 business hours.</p>
-              </div>
-            </div>
+            <h2 className="text-2xl md:text-3xl font-serif font-bold text-[#1A1A1A] mb-2 tracking-tight text-center leading-tight">
+              <span>Get in Touch with</span>
+              <span className="block mt-1 text-[#800020]">ELAIYAL KARIGAI</span>
+            </h2>
+            <p className="text-xs md:text-sm text-[#6B6363] max-w-md mx-auto text-center">
+              Custom weaves, bespoke bridal consultations, and private concierge appointments
+            </p>
           </div>
-        </div>
 
-        {/* Redesigned Luxury Form Card */}
-        <div className="concierge-form-surface">
           {contactSubmitted ? (
-            <div className="concierge-success-box">
-              <div className="success-icon-badge">
-                <CheckCircle2 style={{ width: '30px', height: '30px' }} />
+            <div className="text-center py-8 relative z-10">
+              <div className="w-14 h-14 mx-auto rounded-full bg-[#800020]/10 text-[#800020] flex items-center justify-center mb-4 border border-[#800020]/20">
+                <CheckCircle2 size={28} />
               </div>
-              <h3>Vanakkam, {formName || 'Friend'}.</h3>
-              <p>
-                Your request has been delivered to our master stylists. We look forward to curating
-                a bespoke edit for your wardrobe.
+              <h3 className="text-xl font-serif font-bold text-[#1A1A1A] mb-2">
+                {locale === 'ta' ? `வணக்கம், ${formName || 'அன்பரே'}.` : `Vanakkam, ${formName || 'Friend'}.`}
+              </h3>
+              <p className="text-xs md:text-sm text-[#6B6363] max-w-md mx-auto mb-6">
+                Your request has been received by our master stylists. We look forward to curating a bespoke experience for your wardrobe.
               </p>
               <button
-                className="button button-dark"
-                style={{ marginTop: '24px' }}
-                onClick={() => setContactSubmitted(false)}
+                type="button"
+                className="px-6 py-2.5 rounded-full border border-[#D4AF37] text-[#800020] text-xs font-semibold hover:bg-[#800020] hover:text-white transition-all cursor-pointer"
+                onClick={() => {
+                  setContactSubmitted(false);
+                  setFormName('');
+                  setFormEmail('');
+                  setFormPhone('');
+                  setFormMessage('');
+                }}
               >
                 Send Another Request
               </button>
             </div>
           ) : (
-            <>
-              <h3>Atelier Reservation</h3>
-              <p>Please share your styling preference to begin a dedicated conversation.</p>
+            <form onSubmit={handleContactSubmit} className="space-y-4 relative z-10" noValidate={false}>
+              {/* Field 1: Full Name */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#1A1A1A] mb-1.5">
+                  Full Name / பெயர் <span className="text-[#800020]">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Ananya Sundaram"
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#D4AF37]/30 text-sm text-[#1A1A1A] placeholder-stone-400 focus:bg-white focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/40 outline-none transition-all shadow-sm"
+                />
+              </div>
 
-              <form className="atelier-form-grid" onSubmit={handleContactSubmit}>
-                <div className="input-field-wrap full-width">
-                  <label>Service Type</label>
-                  <div className="chip-selector-group">
-                    {['Bespoke Styling', 'Bridal Edit', 'Custom Drape Size', 'General Enquiry'].map(
-                      (type) => (
-                        <button
-                          type="button"
-                          key={type}
-                          className={`interactive-chip ${contactType === type ? 'selected' : ''}`}
-                          onClick={() => setContactType(type)}
-                        >
-                          {type}
-                        </button>
-                      )
-                    )}
-                  </div>
-                </div>
+              {/* Field 2: Email Address */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#1A1A1A] mb-1.5">
+                  Email Address / மின்னஞ்சல் <span className="text-[#800020]">*</span>
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="ananya@example.com"
+                  value={formEmail}
+                  onChange={(e) => setFormEmail(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#D4AF37]/30 text-sm text-[#1A1A1A] placeholder-stone-400 focus:bg-white focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/40 outline-none transition-all shadow-sm"
+                />
+              </div>
 
-                <div className="input-field-wrap">
-                  <label>Full Name</label>
-                  <input
-                    type="text"
-                    required
-                    className="input-refined"
-                    placeholder="E.g. Ananya Meenakshi"
-                    value={formName}
-                    onChange={(e) => setFormName(e.target.value)}
-                  />
-                </div>
+              {/* Field 3: Phone / WhatsApp */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#1A1A1A] mb-1.5">
+                  Phone / WhatsApp Number / தொலைபேசி <span className="text-[#800020]">*</span>
+                </label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="+91 98401 82019"
+                  value={formPhone}
+                  onChange={(e) => setFormPhone(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#D4AF37]/30 text-sm text-[#1A1A1A] placeholder-stone-400 focus:bg-white focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/40 outline-none transition-all shadow-sm"
+                />
+              </div>
 
-                <div className="input-field-wrap">
-                  <label>Email Address</label>
-                  <input
-                    type="email"
-                    required
-                    className="input-refined"
-                    placeholder="ananya@example.com"
-                    value={formEmail}
-                    onChange={(e) => setFormEmail(e.target.value)}
-                  />
-                </div>
+              {/* Field 4: Your Message */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#1A1A1A] mb-1.5">
+                  Your Message / செய்தி <span className="text-[#800020]">*</span>
+                </label>
+                <textarea
+                  required
+                  rows={4}
+                  placeholder="Describe your requirements, bridal ensemble consultation, or specific collection inquiries..."
+                  value={formMessage}
+                  onChange={(e) => setFormMessage(e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-white/80 border border-[#D4AF37]/30 text-sm text-[#1A1A1A] placeholder-stone-400 focus:bg-white focus:border-[#D4AF37] focus:ring-1 focus:ring-[#D4AF37]/40 outline-none transition-all shadow-sm resize-none"
+                />
+              </div>
 
-                <div className="input-field-wrap full-width">
-                  <label>WhatsApp / Phone Number</label>
-                  <input
-                    type="tel"
-                    required
-                    className="input-refined"
-                    placeholder="+91 98400 12345"
-                    value={formPhone}
-                    onChange={(e) => setFormPhone(e.target.value)}
-                  />
-                </div>
+              {/* Submit Button */}
+              <div className="pt-2">
+                <button
+                  type="submit"
+                  className="w-full py-4 rounded-xl bg-gradient-to-r from-[#800020] via-[#5C0017] to-[#800020] text-[#FAF7F2] font-semibold tracking-wider uppercase text-sm shadow-lg hover:shadow-[#800020]/30 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <span>Send Message to Atelier</span>
+                  <ArrowRight size={16} />
+                </button>
+              </div>
 
-                <div className="input-field-wrap full-width">
-                  <label>How Can We Help You?</label>
-                  <textarea
-                    required
-                    className="textarea-refined"
-                    placeholder="Tell us about your upcoming occasion, preferred palette, or silhouette..."
-                    rows={3}
-                    value={formMessage}
-                    onChange={(e) => setFormMessage(e.target.value)}
-                  />
-                </div>
-
-                <div className="form-action-bar">
-                  <div className="trust-badge">
-                    <ShieldCheck /> Private &amp; encrypted
-                  </div>
-                  <button className="button button-dark" type="submit">
-                    Send Enquiry <Send style={{ width: '12px', height: '12px', marginLeft: '6px' }} />
-                  </button>
-                </div>
-              </form>
-            </>
+              {/* Security note */}
+              <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#8C827A] pt-2">
+                <ShieldCheck size={13} className="text-[#D4AF37]" />
+                <span>Private &amp; encrypted directly to atelier desk (+91 98401 82019)</span>
+              </div>
+            </form>
           )}
         </div>
       </section>
@@ -1651,7 +1643,7 @@ export default function App() {
       <footer className="site-footer">
         <div className="footer-brand">
           <a className="wordmark" href="#top">
-            ILAYYAL <span>KARIGAI</span>
+            ELAIYAL <span>KARIGAI</span>
           </a>
           <p>
             Crafted with intent.
@@ -1671,7 +1663,7 @@ export default function App() {
             <p className="eyebrow">Connect</p>
             <a href="#contact">Instagram</a>
             <a
-              href={getWhatsAppUrl('Hello Ilayal Karigai (+91 98401 82019), I would like to enquire about your collections.')}
+              href={getWhatsAppUrl('Hello ELAIYAL KARIGAI (+91 98401 82019), I would like to enquire about your collections.')}
               target="_blank"
               rel="noreferrer"
             >
@@ -1683,24 +1675,14 @@ export default function App() {
             <p className="eyebrow">Administration</p>
             <button
               onClick={() => navigateTo('admin')}
-              style={{
-                background: 'transparent',
-                border: 'none',
-                color: 'inherit',
-                padding: '6px 0',
-                fontSize: '12px',
-                cursor: 'pointer',
-                textAlign: 'left',
-                opacity: 0.85,
-                letterSpacing: '0.04em',
-              }}
+              className="footer-admin-btn"
             >
               Admin Portal →
             </button>
           </div>
         </div>
         <div className="footer-bottom">
-          <span>© 2026 Ilayyal Karigai</span>
+          <span>© 2026 ELAIYAL KARIGAI</span>
           <span>WhatsApp Enquiries: +91 98401 82019 · Made with care in India</span>
         </div>
       </footer>
@@ -1778,18 +1760,23 @@ export default function App() {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '16px' }}>
               <button
                 className="button button-dark full-button"
+                disabled={selectedProduct.stockStatus === 'out-of-stock'}
                 onClick={() => {
+                  if (selectedProduct.stockStatus === 'out-of-stock') return;
                   setBagCount((c) => c + 1);
+                  triggerToast(`Added to Bag — ${selectedProduct.name}`);
                   setCartOpen(true);
                 }}
               >
-                Add to bag ({selectedSize}) <ArrowRight />
+                {selectedProduct.stockStatus === 'out-of-stock'
+                  ? 'Out of Stock'
+                  : `Add to bag (${selectedSize})`} <ArrowRight />
               </button>
 
               <a
                 className="whatsapp-button"
                 href={getWhatsAppUrl(
-                  `Hello Ilayyal Karigai (+91 98401 82019), I would like to order ${selectedProduct.name} — ${selectedProduct.subtitle} in Size ${selectedSize} (${selectedProduct.price}). Availability: ${selectedProduct.stock}. Please let me know the ordering process.`
+                  `Hello ELAIYAL KARIGAI (+91 98401 82019), I would like to order ${selectedProduct.name} — ${selectedProduct.subtitle} in Size ${selectedSize} (${selectedProduct.price}). Availability: ${selectedProduct.stock}. Please let me know the ordering process.`
                 )}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -1862,7 +1849,7 @@ export default function App() {
                 <a
                   className="whatsapp-button"
                   href={getWhatsAppUrl(
-                    `Hello Ilayyal Karigai (+91 98401 82019), I would like to checkout my order for ${products[0].name} in size ${selectedSize} (${products[0].price}).`
+                    `Hello ELAIYAL KARIGAI (+91 98401 82019), I would like to checkout my order for ${products[0].name} in size ${selectedSize} (${products[0].price}).`
                   )}
                   target="_blank"
                   rel="noreferrer"
@@ -1908,7 +1895,7 @@ export default function App() {
       <WhatsAppWidget
         phoneNumber={WHATSAPP_PHONE}
         rawPhoneNumber={WHATSAPP_RAW_NUMBER}
-        prefilledMessage="Hello Ilayal Karigai, I would like to enquire about your collection."
+        prefilledMessage="Hello ELAIYAL KARIGAI, I would like to enquire about your collection."
       />
     </>
   );

@@ -52,7 +52,7 @@ export const AdminSettings: React.FC = () => {
     const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(products, null, 2));
     const downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute('href', dataStr);
-    downloadAnchor.setAttribute('download', `ilayal-karigai-inventory-${new Date().toISOString().slice(0, 10)}.json`);
+    downloadAnchor.setAttribute('download', `elaiyal-karigai-inventory-${new Date().toISOString().slice(0, 10)}.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
@@ -93,7 +93,7 @@ export const AdminSettings: React.FC = () => {
               <input
                 type="text"
                 disabled
-                value="Ilayal Karigai (இளையள் காரிகை)"
+                value="ELAIYAL KARIGAI (இளையள் காரிகை)"
                 className="settings-input disabled"
               />
             </div>
@@ -114,7 +114,7 @@ export const AdminSettings: React.FC = () => {
               <input
                 type="text"
                 disabled
-                value="Hello Ilayal Karigai, I would like to enquire about your collection."
+                value="Hello ELAIYAL KARIGAI, I would like to enquire about your collection."
                 className="settings-input disabled"
               />
             </div>

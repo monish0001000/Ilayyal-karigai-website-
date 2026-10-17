@@ -66,7 +66,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onNaviga
         {/* Left Editorial Branding Panel */}
         <div className="admin-login-brand-panel">
           <div className="admin-brand-content">
-            <span className="admin-eyebrow">ILAYAL KARIGAI · BOUTIQUE SUITE</span>
+            <span className="admin-eyebrow">ELAIYAL KARIGAI · BOUTIQUE SUITE</span>
             <h1 className="admin-brand-title">The Art of Modern Heritage.</h1>
             <p className="admin-brand-desc">
               A private administrative portal to curate collections, manage luxury handlooms, and orchestrate client orders with intent.
@@ -75,7 +75,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onNaviga
             <div className="admin-brand-quote">
               <span className="quote-mark">“</span>
               <p>Crafted for timeless elegance, grounded in ancestral craft.</p>
-              <cite>— Ilayal Karigai Atelier</cite>
+              <cite>— ELAIYAL KARIGAI Atelier</cite>
             </div>
           </div>
 
@@ -90,7 +90,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onNaviga
           <div className="admin-form-header">
             <span className="admin-portal-badge">PORTAL ACCESS</span>
             <h2 className="admin-heading">Welcome back.</h2>
-            <p className="admin-subheading">Sign in to manage your Ilayal Karigai store.</p>
+            <p className="admin-subheading">Sign in to manage your ELAIYAL KARIGAI store.</p>
           </div>
 
           {errorMessage && (
@@ -122,7 +122,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onNaviga
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="admin@ilayalkarigai.com"
+                  placeholder="admin@elaiyalkarigai.com"
                   required
                   autoComplete="email"
                   className="admin-input"
@@ -165,7 +165,7 @@ export const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onNaviga
 
             <div className="admin-credentials-hint">
               <p>
-                <strong>Admin Credentials:</strong> <code>admin@ilayalkarigai.com</code> / <code>Ilayal@Admin2026!</code>
+                <strong>Admin Credentials:</strong> <code>admin@elaiyalkarigai.com</code> / <code>Elaiyal@Admin2026!</code>
               </p>
             </div>
 

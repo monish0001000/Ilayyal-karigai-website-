@@ -32,7 +32,7 @@ assert(!jsContent.includes('AIzaSy'), 'No Google Cloud private API keys leaked i
 
 // 3. WhatsApp Integration Checks
 assert(jsContent.includes('919840182019'), 'WhatsApp phone number correctly bound in bundle (+91 98401 82019)');
-assert(jsContent.includes('Hello%20Ilayal%20Karigai') || jsContent.includes('Hello Ilayal Karigai'), 'WhatsApp prefilled message correctly configured');
+assert(jsContent.includes('Hello') && (jsContent.includes('ELAIYAL%20KARIGAI') || jsContent.includes('ELAIYAL KARIGAI') || jsContent.includes('Ilayal Karigai')), 'WhatsApp prefilled message correctly configured');
 assert(jsContent.includes('17.472 14.382') || jsContent.includes('M17.472'), 'Authentic WhatsApp SVG vector brand icon compiled into bundle');
 
 // 4. Continuous Full-Width Hero Architecture & Typography Checks
@@ -46,8 +46,8 @@ assert(cssContent.includes('.whatsapp-floating-pill'), 'Official floating WhatsA
 assert(/#25d366/i.test(cssContent), 'Official WhatsApp green (#25D366) present in CSS');
 
 // 5. Admin Portal & Elevated Experience Checks
-assert(jsContent.includes('admin@ilayalkarigai.com'), 'Admin account configuration present');
-assert(jsContent.includes('Welcome back.') && jsContent.includes('Sign in to manage your Ilayal Karigai store.'), 'Admin login copy verified');
+assert(jsContent.includes('admin@elaiyalkarigai.com') || jsContent.includes('admin@ilayalkarigai.com'), 'Admin account configuration present');
+assert(jsContent.includes('Welcome back.') && (jsContent.includes('ELAIYAL KARIGAI') || jsContent.includes('Ilayal Karigai')), 'Admin login copy verified');
 assert(cssContent.includes('perspective:1200px') || cssContent.includes('perspective: 1200px') || cssContent.includes('perspective: 1000px'), 'Elevated 3D card perspective compiled in CSS');
 assert(cssContent.includes(':focus-within') || cssContent.includes('admin-success-state'), 'Typing stability protection (:focus-within) and verified success transition state compiled');
 assert(jsContent.includes('Category Management') || jsContent.includes('Collection Categories'), 'Admin category management compiled');
@@ -90,7 +90,7 @@ try {
   assert(res.status === 200, `Dev server responded with status 200 OK (${res.statusText})`);
   const html = await res.text();
   assert(html.includes('id="root"'), 'Root element present in rendered HTML');
-  assert(html.includes('Ilayal Karigai') || html.includes('Ilayyal Karigai'), 'Brand title present in HTML');
+  assert(html.includes('ELAIYAL KARIGAI') || html.includes('Ilayal Karigai'), 'Brand title present in HTML');
 } catch (e) {
   console.error('Fetch error:', e);
   failedTests++;

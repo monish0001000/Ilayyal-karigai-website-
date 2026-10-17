@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { CategoryItem } from '../types';
 
-const STORAGE_KEY = 'ilayal_categories_v1';
+const STORAGE_KEY = 'elaiyal_categories_v1';
+const LEGACY_STORAGE_KEY = 'ilayal_categories_v1';
 
 export const INITIAL_CATEGORIES: CategoryItem[] = [
   {
@@ -65,7 +66,7 @@ class CategoryService {
 
   private ensureSeed() {
     if (typeof window === 'undefined') return;
-    const existing = localStorage.getItem(STORAGE_KEY);
+    const existing = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
     if (!existing) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_CATEGORIES));
     }
@@ -74,7 +75,7 @@ class CategoryService {
   public getCategories(includeHidden: boolean = false): CategoryItem[] {
     if (typeof window === 'undefined') return INITIAL_CATEGORIES;
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
       if (!raw) return INITIAL_CATEGORIES;
       const list: CategoryItem[] = JSON.parse(raw);
       if (includeHidden) return list;

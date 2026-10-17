@@ -37,6 +37,23 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
   });
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Close drawer on Escape key and manage body scroll lock
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMobileMenuOpen(false);
+    };
+    if (mobileMenuOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   const handleSignOut = async () => {
     await authService.logout();
     onLogout();
@@ -48,9 +65,11 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       <header className="sticky top-0 z-40 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#D4AF37]/20 px-4 py-3 flex items-center justify-between admin-portal-header">
         <div className="admin-header-left flex items-center gap-2 md:gap-3">
           <button
-            className="admin-mobile-toggle md:hidden p-1.5 rounded-lg hover:bg-[#800020]/10 text-[#800020] transition-colors"
+            type="button"
+            className="admin-mobile-toggle p-2 rounded-lg hover:bg-[#800020]/10 text-[#800020] transition-colors cursor-pointer"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
@@ -60,7 +79,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             title="View store"
           >
             <span className="brand-name text-base md:text-lg font-serif font-bold tracking-widest text-[#26050C]">
-              ILAYAL KARIGAI
+              ELAIYAL KARIGAI
             </span>
             <span className="bg-[#800020] text-[#D4AF37] uppercase tracking-wider text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
               ADMIN
@@ -98,7 +117,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           {/* Mobile Live Store Icon Button */}
           <button
             onClick={onNavigateHome}
-            className="md:hidden p-2 rounded-xl border border-[#D4AF37]/30 bg-white/80 text-[#800020] hover:bg-[#800020] hover:text-white transition-all shadow-sm"
+            className="admin-mobile-icon-btn md:hidden p-2 rounded-xl border border-[#D4AF37]/30 bg-white/80 text-[#800020] hover:bg-[#800020] hover:text-white transition-all shadow-sm"
             title="View Live Storefront"
             aria-label="View Live Storefront"
           >
@@ -129,7 +148,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           {/* Mobile Compact Logout Button */}
           <button
             onClick={handleSignOut}
-            className="md:hidden p-2 rounded-xl bg-[#800020]/10 text-[#800020] hover:bg-[#800020] hover:text-white transition-all"
+            className="admin-mobile-icon-btn md:hidden p-2 rounded-xl bg-[#800020]/10 text-[#800020] hover:bg-[#800020] hover:text-white transition-all"
             title="Sign Out"
             aria-label="Sign out"
           >
@@ -149,10 +168,40 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
         </div>
       </header>
 
-      {/* Mobile Drawer */}
+      {/* Mobile & Tablet Drawer Backdrop */}
       {mobileMenuOpen && (
-        <div className="admin-mobile-drawer">
+        <div
+          className="admin-drawer-backdrop"
+          onClick={() => setMobileMenuOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Styled Slide-out Navigation Drawer Menu */}
+      <aside
+        className={`admin-mobile-drawer ${mobileMenuOpen ? 'is-open' : ''}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Admin Navigation Menu"
+      >
+        <div className="admin-drawer-header">
+          <div className="admin-drawer-brand">
+            <span className="admin-drawer-title">ELAIYAL KARIGAI</span>
+            <span className="admin-drawer-badge">ADMIN MENU</span>
+          </div>
           <button
+            type="button"
+            className="admin-drawer-close-btn"
+            onClick={() => setMobileMenuOpen(false)}
+            aria-label="Close navigation menu"
+          >
+            <X size={18} />
+          </button>
+        </div>
+
+        <nav className="admin-drawer-nav">
+          <button
+            type="button"
             onClick={() => {
               setActiveTab('products');
               setMobileMenuOpen(false);
@@ -163,6 +212,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             <span>Products Catalogue</span>
           </button>
           <button
+            type="button"
             onClick={() => {
               setActiveTab('categories');
               setMobileMenuOpen(false);
@@ -173,6 +223,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             <span>Categories</span>
           </button>
           <button
+            type="button"
             onClick={() => {
               setActiveTab('settings');
               setMobileMenuOpen(false);
@@ -182,17 +233,34 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
             <Settings size={18} />
             <span>Store Settings</span>
           </button>
+
           <hr className="drawer-divider" />
-          <button onClick={onNavigateHome} className="drawer-tab-btn">
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              onNavigateHome();
+            }}
+            className="drawer-tab-btn boutique"
+          >
             <ExternalLink size={18} />
             <span>View Live Boutique</span>
           </button>
-          <button onClick={handleSignOut} className="drawer-tab-btn logout">
+
+          <button
+            type="button"
+            onClick={() => {
+              setMobileMenuOpen(false);
+              handleSignOut();
+            }}
+            className="drawer-tab-btn logout"
+          >
             <LogOut size={18} />
             <span>Sign Out</span>
           </button>
-        </div>
-      )}
+        </nav>
+      </aside>
 
       {/* Main Content Area */}
       <main className="admin-portal-content">

@@ -1,5 +1,5 @@
 /* ==============================================================================
-   ILAYAL KARIGAI — ADMIN PORTAL STYLING SYSTEM
+   ELAIYAL KARIGAI — ADMIN PORTAL STYLING SYSTEM
    Art of Modern Heritage: Luxury editorial admin experience
    ============================================================================== */
 
@@ -420,11 +420,194 @@
 }
 
 .admin-mobile-toggle {
-  display: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: transparent;
   border: none;
-  color: #262222;
+  color: #800020;
   cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.admin-mobile-toggle:hover {
+  background: rgba(128, 0, 32, 0.08);
+}
+
+@media (min-width: 1024px) {
+  .admin-mobile-toggle {
+    display: none;
+  }
+}
+
+/* ==============================================================================
+   Admin Navigation Drawer & Popup Menu
+   ============================================================================== */
+.admin-drawer-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(18, 3, 6, 0.45);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 90;
+  animation: adminDrawerFadeIn 0.22s ease-out forwards;
+}
+
+.admin-mobile-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: min(320px, 86vw);
+  background: #FAF7F2;
+  border-right: 1px solid rgba(212, 175, 55, 0.3);
+  box-shadow: 0 10px 40px -10px rgba(35, 5, 12, 0.28);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 18px;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow-y: auto;
+}
+
+.admin-mobile-drawer.is-open {
+  transform: translateX(0);
+}
+
+.admin-drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+}
+
+.admin-drawer-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.admin-drawer-title {
+  font-family: var(--serif, 'Playfair Display', serif);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #26050C;
+}
+
+.admin-drawer-badge {
+  display: inline-block;
+  align-self: flex-start;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: #800020;
+  color: #D4AF37;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.admin-drawer-close-btn {
+  background: rgba(128, 0, 32, 0.08);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  color: #800020;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.admin-drawer-close-btn:hover {
+  background: #800020;
+  color: #FAF7F2;
+}
+
+.admin-drawer-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #26050C;
+  background: #FFFFFF;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 4px rgba(35, 5, 12, 0.03);
+}
+
+.drawer-tab-btn:hover {
+  background: rgba(128, 0, 32, 0.06);
+  border-color: rgba(212, 175, 55, 0.45);
+  color: #800020;
+  transform: translateX(3px);
+}
+
+.drawer-tab-btn.active {
+  background: #800020;
+  border-color: #800020;
+  color: #FAF7F2;
+  box-shadow: 0 4px 14px rgba(128, 0, 32, 0.25);
+}
+
+.drawer-tab-btn.active svg {
+  color: #D4AF37;
+}
+
+.drawer-divider {
+  border: none;
+  border-top: 1px solid rgba(212, 175, 55, 0.22);
+  margin: 10px 0;
+}
+
+.drawer-tab-btn.boutique {
+  color: #8C6D1F;
+  border-color: rgba(212, 175, 55, 0.35);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.drawer-tab-btn.boutique:hover {
+  background: #FAF7F2;
+  color: #651D32;
+  border-color: #800020;
+}
+
+.drawer-tab-btn.logout {
+  color: #9F1239;
+  border-color: rgba(159, 18, 57, 0.25);
+  background: #FFF1F2;
+  margin-top: 4px;
+}
+
+.drawer-tab-btn.logout:hover {
+  background: #800020;
+  border-color: #800020;
+  color: #FFFFFF;
+}
+
+@keyframes adminDrawerFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 .admin-brand-mark {
@@ -491,8 +674,20 @@
   gap: 14px;
 }
 
-.admin-view-store-btn {
+.admin-mobile-icon-btn {
   display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .admin-mobile-icon-btn {
+    display: none !important;
+  }
+}
+
+.admin-view-store-btn {
+  display: none;
   align-items: center;
   gap: 6px;
   background: #FAF8F5;
@@ -506,6 +701,12 @@
   transition: all 0.2s ease;
 }
 
+@media (min-width: 768px) {
+  .admin-view-store-btn {
+    display: inline-flex;
+  }
+}
+
 .admin-view-store-btn:hover {
   background: #FFFFFF;
   border-color: #651D32;
@@ -513,7 +714,7 @@
 }
 
 .admin-user-badge {
-  display: flex;
+  display: none;
   align-items: center;
   gap: 6px;
   background: #FAF8F5;
@@ -523,8 +724,14 @@
   color: #4A4444;
 }
 
+@media (min-width: 768px) {
+  .admin-user-badge {
+    display: flex;
+  }
+}
+
 .admin-logout-btn {
-  display: inline-flex;
+  display: none;
   align-items: center;
   gap: 6px;
   background: transparent;
@@ -535,6 +742,12 @@
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+@media (min-width: 768px) {
+  .admin-logout-btn {
+    display: inline-flex;
+  }
 }
 
 .admin-logout-btn:hover {
