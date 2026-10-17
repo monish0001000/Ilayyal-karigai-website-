@@ -24,6 +24,19 @@ import {
   Tag,
   Phone,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { WhatsAppIcon } from './components/WhatsAppIcon';
+import { WhatsAppWidget } from './components/WhatsAppWidget';
+import { AdminLogin } from './admin/AdminLogin';
+import { AdminLayout } from './admin/AdminLayout';
+import { CollectionsPage } from './pages/CollectionsPage';
+import { CategoryFilterBar, CategoryFilterItem } from './components/CategoryFilterBar';
+import { ProductCard3D } from './components/ProductCard3D';
+import { WhatsAppInquiryModal } from './components/WhatsAppInquiryModal';
+import { useLocale } from './context/LocaleContext';
+import { useProducts, productService } from './services/productService';
+import { authService } from './services/authService';
+import { AdminUser, Product, CollectionCategory, StockStatus } from './types';
 
 export const WHATSAPP_PHONE = '+91 98401 82019';
 export const WHATSAPP_RAW_NUMBER = '919840182019';
@@ -34,34 +47,7 @@ export const getWhatsAppUrl = (message: string) =>
 const unsplash = (id: string, params = 'auto=format&fit=crop&w=1200&q=85') =>
   `https://images.unsplash.com/${id}?${params}`;
 
-export type CollectionCategory =
-  | 'Everyday Cotton'
-  | 'Traditional Wear'
-  | 'Festive Collection'
-  | 'Contemporary Designs'
-  | 'New Arrivals';
-
-export interface Product {
-  id: string;
-  name: string;
-  tamil: string;
-  subtitle: string;
-  category: string;
-  collectionCategory: CollectionCategory;
-  price: string;
-  priceNumber: number;
-  originalPrice?: string;
-  image: string;
-  color: string;
-  stock: string;
-  stockStatus: 'in-stock' | 'low-stock';
-  sizes: string[];
-  isNewArrival?: boolean;
-  isBestSeller?: boolean;
-  salesCount?: number; // Actual verified sales data
-  description: string;
-  fabric: string;
-}
+export type { CollectionCategory, Product, StockStatus } from './types';
 
 export const products: Product[] = [
   {
@@ -335,14 +321,6 @@ export const collections = [
   },
 ];
 
-const catalogImages: Record<string, string[]> = {
-  sarees: ['/product-sempon-selai.png', '/product-neelam.png', '/product-ananya.png'],
-  salwars: ['/product-poonthalir.png', '/product-meera.png', '/product-yazhini.png'],
-  kurtis: ['/product-kurinji.png', '/product-nila.png', '/product-meera.png'],
-  lehengas: ['/product-ponmayil.png', '/product-vaanathi.png', '/product-kavya.png'],
-  festive: ['/product-senthamarai.png', '/product-kavya.png', '/product-sempon-selai.png'],
-  shirts: ['/product-neelam.png', '/product-kurinji.png', '/product-yazhini.png'],
-};
 
 const catalogCategories = [
   {
@@ -565,124 +543,26 @@ const visualDiaryCollage = [
   },
 ];
 
-function CatalogPage({ onNavigateHome }: { onNavigateHome: () => void }) {
-  const [activeKey, setActiveKey] = useState('sarees');
-  const [savedItems, setSavedItems] = useState<string[]>([]);
+type AppPage = 'home' | 'collections' | 'admin-login' | 'admin';
 
-  const activeCategory = useMemo(
-    () => catalogCategories.find((cat) => cat.key === activeKey) ?? catalogCategories[0],
-    [activeKey]
-  );
-
-  const items = activeCategory.names.map((name, idx) => ({
-    name,
-    image: catalogImages[activeCategory.key][idx % catalogImages[activeCategory.key].length],
-    price: `₹${(3850 + ((517 * idx) % 6200)).toLocaleString('en-IN')}`,
-  }));
-
-  const handleBack = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    onNavigateHome();
-  };
-
-  return (
-    <main className="catalog-page">
-      <header className="catalog-header">
-        <a href="/" className="catalog-back" onClick={handleBack}>
-          <ArrowLeft /> Back to Ilayyal
-        </a>
-        <a className="catalog-wordmark" href="/" onClick={handleBack}>
-          ILAYYAL <span>KARIGAI</span>
-        </a>
-        <span className="catalog-count">{items.length} pieces</span>
-      </header>
-
-      <section className="catalog-intro">
-        <p className="eyebrow">The complete edit / 2026</p>
-        <h1>
-          Wear the
-          <br />
-          <em>meaning.</em>
-        </h1>
-        <p>
-          Six distinct collections, each shaped by Tamil colour, craft and memory. Find the pieces
-          that feel like your own.
-        </p>
-      </section>
-
-      <nav className="catalog-tabs" aria-label="Collections">
-        {catalogCategories.map((cat) => (
-          <button
-            key={cat.key}
-            className={cat.key === activeKey ? 'is-active' : ''}
-            onClick={() => setActiveKey(cat.key)}
-          >
-            <span>{cat.tamil}</span>
-            <small>{cat.english}</small>
-          </button>
-        ))}
-      </nav>
-
-      <section className="catalog-collection">
-        <div className="catalog-collection-head">
-          <div>
-            <p className="eyebrow">
-              {activeCategory.tamil} / {activeCategory.english}
-            </p>
-            <h2>{activeCategory.note}</h2>
-          </div>
-          <span>01 — 18</span>
-        </div>
-
-        <div className="catalog-grid">
-          {items.map((item, idx) => (
-            <article className="catalog-product" key={`${item.name}-${idx}`}>
-              <div className="catalog-product-image">
-                <img src={item.image} alt={`${item.name}, ${activeCategory.english}`} />
-                <button
-                  className={savedItems.includes(item.name) ? 'saved' : ''}
-                  aria-label={`Save ${item.name}`}
-                  onClick={() =>
-                    setSavedItems((prev) =>
-                      prev.includes(item.name)
-                        ? prev.filter((n) => n !== item.name)
-                        : [...prev, item.name]
-                    )
-                  }
-                >
-                  <Heart />
-                </button>
-                <span>0{(idx % 9) + 1}</span>
-              </div>
-              <div className="catalog-product-meta">
-                <h3>{item.name}</h3>
-                <p>
-                  {activeCategory.english} · {item.price}
-                </p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <footer className="catalog-footer">
-        <p>
-          Crafted with intent.
-          <br />
-          Designed for today.
-        </p>
-        <a href="/" onClick={handleBack}>
-          Return home <ArrowRight />
-        </a>
-      </footer>
-    </main>
-  );
+function getInitialPage(): AppPage {
+  if (typeof window === 'undefined') return 'home';
+  const path = window.location.pathname;
+  if (path.startsWith('/admin')) {
+    return 'admin';
+  }
+  if (path === '/collections') {
+    return 'collections';
+  }
+  return 'home';
 }
 
 export default function App() {
-  const [page, setPage] = useState<'home' | 'collections'>(() =>
-    window.location.pathname === '/collections' ? 'collections' : 'home'
-  );
+  const { locale, setLocale, t, getProductName, getProductSubtitle, getCategoryName } = useLocale();
+  const products = useProducts();
+  const [page, setPage] = useState<AppPage>(getInitialPage);
+  const [sessionUser, setSessionUser] = useState<AdminUser | null>(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -690,6 +570,50 @@ export default function App() {
   const [bagCount, setBagCount] = useState(0);
   const [savedProducts, setSavedProducts] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+  const [inquiryProduct, setInquiryProduct] = useState<Product | null>(null);
+
+  const homeFilterCategories = useMemo<CategoryFilterItem[]>(
+    () => [
+      { key: 'all', english: 'All Pieces', tamil: 'அனைத்தும்', count: products.length },
+      {
+        key: 'Everyday Cotton',
+        english: 'Everyday Cotton',
+        tamil: 'தினசரி பருத்தி',
+        count: products.filter((p) => p.collectionCategory === 'Everyday Cotton').length,
+      },
+      {
+        key: 'Traditional Wear',
+        english: 'Traditional Wear',
+        tamil: 'பாரம்பரியம்',
+        count: products.filter((p) => p.collectionCategory === 'Traditional Wear').length,
+      },
+      {
+        key: 'Festive Collection',
+        english: 'Festive Wear',
+        tamil: 'விழாத் தொகுப்பு',
+        count: products.filter((p) => p.collectionCategory === 'Festive Collection').length,
+      },
+      {
+        key: 'Contemporary Designs',
+        english: 'Contemporary',
+        tamil: 'நவீன வடிவம்',
+        count: products.filter((p) => p.collectionCategory === 'Contemporary Designs').length,
+      },
+      {
+        key: 'New Arrivals',
+        english: 'New Arrivals',
+        tamil: 'புதிய வரவுகள்',
+        count: products.filter((p) => p.isNewArrival).length,
+      },
+      {
+        key: 'Best Sellers',
+        english: 'Best Sellers',
+        tamil: 'சிறந்த தேர்வு',
+        count: products.filter((p) => p.isBestSeller).length,
+      },
+    ],
+    [products]
+  );
 
   const filteredProducts = useMemo(() => {
     if (selectedCategory === 'all') return products;
@@ -700,7 +624,7 @@ export default function App() {
       return products.filter((p) => p.isNewArrival);
     }
     return products.filter((p) => p.collectionCategory === selectedCategory);
-  }, [selectedCategory]);
+  }, [products, selectedCategory]);
 
   const categoryFilters = useMemo(
     () => [
@@ -736,7 +660,7 @@ export default function App() {
         count: products.filter((p) => p.isBestSeller).length,
       },
     ],
-    []
+    [products]
   );
 
   // 5. Making Section Motion Interactive State
@@ -752,15 +676,34 @@ export default function App() {
   const [contactSubmitted, setContactSubmitted] = useState(false);
 
   useEffect(() => {
+    authService.getSession().then((session) => {
+      if (session) {
+        setSessionUser(session.user);
+      } else {
+        setSessionUser(null);
+      }
+      setAuthChecked(true);
+    });
+
     const onPopState = () => {
-      setPage(window.location.pathname === '/collections' ? 'collections' : 'home');
+      const p = window.location.pathname;
+      if (p.startsWith('/admin')) {
+        setPage('admin');
+      } else if (p === '/collections') {
+        setPage('collections');
+      } else {
+        setPage('home');
+      }
     };
     window.addEventListener('popstate', onPopState);
     return () => window.removeEventListener('popstate', onPopState);
   }, []);
 
-  const navigateTo = (target: 'home' | 'collections') => {
-    const path = target === 'collections' ? '/collections' : '/';
+  const navigateTo = (target: AppPage) => {
+    let path = '/';
+    if (target === 'collections') path = '/collections';
+    else if (target === 'admin') path = '/admin';
+    else if (target === 'admin-login') path = '/admin/login';
     window.history.pushState({}, '', path);
     setPage(target);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -783,40 +726,150 @@ export default function App() {
     [bagCount]
   );
 
-  if (page === 'collections') {
-    return <CatalogPage onNavigateHome={() => navigateTo('home')} />;
-  }
-
   return (
-    <main className="site-shell">
+    <>
+      <AnimatePresence mode="wait">
+        {page === 'admin' || page === 'admin-login' ? (
+          <motion.div
+            key={sessionUser ? 'admin-dashboard' : 'admin-login'}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4 }}
+          >
+            {sessionUser ? (
+              <AdminLayout
+                user={sessionUser}
+                onLogout={() => {
+                  setSessionUser(null);
+                  navigateTo('admin-login');
+                }}
+                onNavigateHome={() => navigateTo('home')}
+              />
+            ) : (
+              <AdminLogin
+                onLoginSuccess={() => {
+                  authService.getSession().then((session) => {
+                    if (session) setSessionUser(session.user);
+                    navigateTo('admin');
+                  });
+                }}
+                onNavigateHome={() => navigateTo('home')}
+              />
+            )}
+          </motion.div>
+        ) : page === 'collections' ? (
+          <motion.div
+            key="collections"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4 }}
+          >
+            <CollectionsPage
+              onNavigateHome={() => navigateTo('home')}
+              onSelectProduct={(p) => {
+                setSelectedProduct(p);
+                setSelectedSize(p.sizes[0] || 'M');
+              }}
+              onAddToCart={(p, size) => {
+                setSelectedProduct(p);
+                setSelectedSize(size);
+                setBagCount((c) => c + 1);
+                setCartOpen(true);
+              }}
+              savedProducts={savedProducts}
+              onToggleSaveProduct={toggleSaveProduct}
+              initialCategory={selectedCategory}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="home"
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4 }}
+          >
+            <main className="site-shell">
       {/* Navigation Header */}
       <header className="site-header">
         <button
-          className="menu-toggle"
+          className="menu-toggle flex md:hidden items-center justify-center"
           aria-label="Open menu"
           onClick={() => setMobileMenuOpen(true)}
         >
           <Menu />
         </button>
         <a className="wordmark" href="#top">
-          Ilayyal Karigai
+          Ilayal Karigai
         </a>
-        <nav className="desktop-nav" aria-label="Main navigation">
-          <a href="#shop" onClick={() => setSelectedCategory('all')}>Catalogue</a>
-          <a href="#collections">Collections</a>
-          <a href="#shop" onClick={() => setSelectedCategory('New Arrivals')}>New Arrivals</a>
-          <a href="#shop" onClick={() => setSelectedCategory('Best Sellers')}>Best Sellers</a>
-          <a href="#story">Our story</a>
-          <a href="#contact">Contact</a>
+        <nav className="desktop-nav hidden md:flex items-center space-x-8" aria-label="Main navigation">
+          <a href="#shop" onClick={() => setSelectedCategory('all')}>{t.nav.catalogue}</a>
           <a
-            href={getWhatsAppUrl('Hello Ilayyal Karigai (+91 98401 82019), I would like to enquire about your handcrafted collections.')}
+            href="/collections"
+            onClick={(e) => {
+              e.preventDefault();
+              navigateTo('collections');
+            }}
+          >
+            {t.nav.archive}
+          </a>
+          <a href="#shop" onClick={() => setSelectedCategory('New Arrivals')}>{t.nav.new_arrivals}</a>
+          <a href="#shop" onClick={() => setSelectedCategory('Best Sellers')}>{t.nav.bestsellers}</a>
+          <a href="#story">{t.nav.story}</a>
+          <a href="#contact">{t.nav.contact}</a>
+          <a
+            href={getWhatsAppUrl('Hello Ilayal Karigai (+91 98401 82019), I would like to enquire about your handcrafted collections.')}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', color: '#128C7E', fontWeight: 600 }}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#128C7E', fontWeight: 600 }}
           >
-            <MessageCircle style={{ width: '12px', height: '12px' }} />
-            WhatsApp
+            <WhatsAppIcon size={14} />
+            {t.nav.whatsapp}
           </a>
+          <button
+            onClick={() => navigateTo('admin')}
+            className="nav-admin-link"
+            title="Atelier Admin Portal"
+          >
+            {t.nav.admin}
+          </button>
+
+          {/* Minimal Pill Toggle in Header (EN | தமிழ்) with subtle active gold glow */}
+          <div
+            className="flex items-center bg-[#f2ede4] border border-[#D4AF37]/40 rounded-full p-0.5 text-[11px] font-medium tracking-wide shadow-2xs"
+            role="radiogroup"
+            aria-label="Language selection"
+          >
+            <button
+              type="button"
+              onClick={() => setLocale('en')}
+              className={`px-2.5 py-0.5 rounded-full transition-all duration-200 cursor-pointer ${
+                locale === 'en'
+                  ? 'bg-white text-[#800020] font-semibold shadow-[0_0_10px_rgba(212,175,55,0.45)] border border-[#D4AF37]/40'
+                  : 'text-[#1A1A1A]/70 hover:text-[#800020]'
+              }`}
+              aria-checked={locale === 'en'}
+              role="radio"
+            >
+              EN
+            </button>
+            <span className="text-[#D4AF37]/60 text-[10px] px-0.5 select-none font-light">|</span>
+            <button
+              type="button"
+              onClick={() => setLocale('ta')}
+              className={`px-2.5 py-0.5 rounded-full transition-all duration-200 cursor-pointer ${
+                locale === 'ta'
+                  ? 'bg-white text-[#800020] font-semibold shadow-[0_0_10px_rgba(212,175,55,0.45)] border border-[#D4AF37]/40'
+                  : 'text-[#1A1A1A]/70 hover:text-[#800020]'
+              }`}
+              aria-checked={locale === 'ta'}
+              role="radio"
+            >
+              தமிழ்
+            </button>
+          </div>
         </nav>
         <button
           className="bag-button"
@@ -828,129 +881,279 @@ export default function App() {
         </button>
       </header>
 
-      {/* Mobile Menu */}
-      {mobileMenuOpen && (
-        <div className="mobile-menu">
-          <button
-            className="close-button"
-            onClick={() => setMobileMenuOpen(false)}
-            aria-label="Close menu"
-          >
-            <X />
-          </button>
-          <p className="eyebrow light">Navigate</p>
-          <nav>
-            <a href="#shop" onClick={() => { setSelectedCategory('all'); setMobileMenuOpen(false); }}>
-              Full Catalogue
-            </a>
-            <a href="#collections" onClick={() => setMobileMenuOpen(false)}>
-              Collections (5 Categories)
-            </a>
-            <a href="#shop" onClick={() => { setSelectedCategory('New Arrivals'); setMobileMenuOpen(false); }}>
-              New Arrivals (2026 Batch)
-            </a>
-            <a href="#shop" onClick={() => { setSelectedCategory('Best Sellers'); setMobileMenuOpen(false); }}>
-              Best-Sellers (Verified Orders)
-            </a>
-            <a href="#story" onClick={() => setMobileMenuOpen(false)}>
-              Our story
-            </a>
-            <a href="#contact" onClick={() => setMobileMenuOpen(false)}>
-              Contact Concierge
-            </a>
-            <a
-              href={getWhatsAppUrl('Hello Ilayyal Karigai (+91 98401 82019), I would like to enquire.')}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: '#25D366', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px', fontWeight: 600 }}
+      {/* Animated Mobile Sheet using Framer Motion (x: '100%' to x: 0) */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <div className="fixed inset-0 z-50 flex justify-end">
+            <motion.div
+              className="fixed inset-0 bg-black/40 backdrop-blur-xs"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMobileMenuOpen(false)}
+              aria-hidden="true"
+            />
+            <motion.aside
+              className="relative w-[340px] max-w-[85vw] h-full bg-[#FAF7F2]/95 backdrop-blur-xl border-l border-[#D4AF37]/30 shadow-2xl p-6 flex flex-col justify-between overflow-y-auto z-10"
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 28, stiffness: 280 }}
             >
-              <MessageCircle style={{ width: '18px', height: '18px' }} />
-              WhatsApp: +91 98401 82019
-            </a>
-          </nav>
-          <p className="menu-footer">
-            Crafted with intent.
-            <br />
-            Designed for today.
-          </p>
-        </div>
-      )}
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <span className="font-serif text-sm tracking-widest text-[#800020] uppercase font-semibold">
+                    Ilayal Karigai
+                  </span>
+                  <button
+                    className="p-1.5 rounded-full text-[#1A1A1A] hover:bg-[#1A1A1A]/5 transition-colors cursor-pointer"
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-label="Close menu"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                {/* Mobile Language Switcher: Segmented control placed at the top of the mobile navigation drawer */}
+                <div
+                  className="grid grid-cols-2 p-1 bg-[#f2ede4] border border-[#D4AF37]/40 rounded-xl text-xs font-medium mb-6 shadow-2xs"
+                  role="radiogroup"
+                  aria-label="Mobile language selection"
+                >
+                  <button
+                    type="button"
+                    onClick={() => setLocale('en')}
+                    className={`py-2 rounded-lg text-center transition-all duration-200 cursor-pointer ${
+                      locale === 'en'
+                        ? 'bg-[#800020] text-[#FAF7F2] font-semibold shadow-sm'
+                        : 'text-[#1A1A1A]/70 hover:text-[#800020]'
+                    }`}
+                    aria-checked={locale === 'en'}
+                    role="radio"
+                  >
+                    English (EN)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setLocale('ta')}
+                    className={`py-2 rounded-lg text-center transition-all duration-200 cursor-pointer ${
+                      locale === 'ta'
+                        ? 'bg-[#800020] text-[#FAF7F2] font-semibold shadow-sm'
+                        : 'text-[#1A1A1A]/70 hover:text-[#800020]'
+                    }`}
+                    aria-checked={locale === 'ta'}
+                    role="radio"
+                  >
+                    தமிழ் (TA)
+                  </button>
+                </div>
+
+                <p className="eyebrow light mb-3 text-[11px] tracking-widest text-[#800020]/80 uppercase">
+                  {locale === 'ta' ? 'வழிகாட்டல்' : 'Navigation'}
+                </p>
+
+                <nav className="flex flex-col space-y-3 font-medium text-sm">
+                  <a
+                    href="#shop"
+                    onClick={() => { setSelectedCategory('all'); setMobileMenuOpen(false); }}
+                    className="text-[#1A1A1A] hover:text-[#800020] transition-colors py-1"
+                  >
+                    {t.nav.catalogue}
+                  </a>
+                  <a
+                    href="/collections"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      navigateTo('collections');
+                      setMobileMenuOpen(false);
+                    }}
+                    className="text-[#1A1A1A] hover:text-[#800020] transition-colors py-1"
+                  >
+                    {t.nav.archive}
+                  </a>
+                  <a
+                    href="#shop"
+                    onClick={() => { setSelectedCategory('New Arrivals'); setMobileMenuOpen(false); }}
+                    className="text-[#1A1A1A] hover:text-[#800020] transition-colors py-1"
+                  >
+                    {t.nav.new_arrivals}
+                  </a>
+                  <a
+                    href="#shop"
+                    onClick={() => { setSelectedCategory('Best Sellers'); setMobileMenuOpen(false); }}
+                    className="text-[#1A1A1A] hover:text-[#800020] transition-colors py-1"
+                  >
+                    {t.nav.bestsellers}
+                  </a>
+                  <a
+                    href="#story"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-[#1A1A1A] hover:text-[#800020] transition-colors py-1"
+                  >
+                    {t.nav.story}
+                  </a>
+                  <a
+                    href="#contact"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="text-[#1A1A1A] hover:text-[#800020] transition-colors py-1"
+                  >
+                    {t.nav.contact}
+                  </a>
+                </nav>
+
+                {/* Dedicated Categories List */}
+                <div className="mt-6 pt-5 border-t border-[#D4AF37]/25">
+                  <p className="eyebrow light mb-3 text-[11px] tracking-widest text-[#800020]/80 uppercase">
+                    {locale === 'ta' ? 'ஆடைத் தொகுப்புகள்' : 'Dedicated Categories'}
+                  </p>
+                  <div className="grid grid-cols-1 gap-2">
+                    {[
+                      { key: 'Everyday Cotton', labelEn: 'Everyday Cotton', labelTa: 'தினசரி பருத்தி' },
+                      { key: 'Traditional Wear', labelEn: 'Traditional Wear', labelTa: 'பாரம்பரிய உடைகள்' },
+                      { key: 'Festive Collection', labelEn: 'Festive Collection', labelTa: 'விழாத் தொகுப்பு' },
+                      { key: 'Contemporary Designs', labelEn: 'Contemporary Designs', labelTa: 'நவீன வடிவமைப்பு' },
+                    ].map((catItem) => (
+                      <button
+                        key={catItem.key}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory(catItem.key);
+                          setMobileMenuOpen(false);
+                          document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="text-left text-xs text-[#1A1A1A]/85 hover:text-[#800020] py-1.5 px-2.5 rounded-lg hover:bg-white/80 transition-colors flex items-center justify-between cursor-pointer"
+                      >
+                        <span>{locale === 'ta' ? catItem.labelTa : catItem.labelEn}</span>
+                        <span className="text-[#D4AF37] text-xs">→</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-6 pt-4 border-t border-[#D4AF37]/25 space-y-2">
+                  <a
+                    href={getWhatsAppUrl('Hello Ilayal Karigai (+91 98401 82019), I would like to enquire.')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-[#25D366] font-semibold text-xs py-1"
+                  >
+                    <WhatsAppIcon size={16} />
+                    <span>WhatsApp: +91 98401 82019</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => { navigateTo('admin'); setMobileMenuOpen(false); }}
+                    className="flex items-center gap-1.5 text-[#800020] text-xs font-semibold py-1 tracking-wider uppercase cursor-pointer"
+                  >
+                    <span>{t.nav.admin} Portal →</span>
+                  </button>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-[#1A1A1A]/50 mt-6 pt-4 border-t border-[#D4AF37]/20 font-serif italic text-center">
+                Crafted with intent. Designed for today.
+              </p>
+            </motion.aside>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* ============================================================
-          1. HERO SECTION: Premium Editorial Indian Luxury Fashion
+          1. HERO SECTION: Continuous Full-Width Luxury Fashion Campaign
           ============================================================ */}
-      <section className="hero" id="top">
-        <picture className="hero-picture">
-          <source
-            media="(min-width: 768px)"
-            srcSet="/Elegant%20Ivory%20Saree%20Editorial.png"
-          />
-          <source
-            media="(max-width: 767px)"
-            srcSet="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/MOBILE_HERO_IMAGE-juOsrQvhnz6q1V5azTnnKuu9uQjWuc.png"
-          />
-          <img
-            src="/Elegant%20Ivory%20Saree%20Editorial.png"
-            alt="Woman wearing an elegant ivory and gold silk saree in luxury editorial setting"
-            fetchPriority="high"
-          />
-        </picture>
-
-        {/* Cinematic Deep Burgundy & Warm Directional Atmosphere */}
-        <div className="hero-vignette" />
-
-        {/* Delicate low-height pure-white seam transition */}
-        <div className="hero-blend-fade-smooth" />
-
-        <div className="hero-content">
-          <div className="hero-eyebrow-wrapper">
-            <span className="hero-eyebrow-accent-line" aria-hidden="true" />
-            <p className="eyebrow light">A NEW INDIAN CLOTHING LABEL</p>
-          </div>
-
-          <h1 className="hero-headline">
-            <span className="headline-line-1">Crafted</span>
-            <span className="headline-line-2">with intent.</span>
-          </h1>
-
-          <p className="hero-copy">
-            Thoughtfully designed silhouettes, natural fabrics and limited collections made
-            exclusively for the Ilayyal Karigai woman.
-          </p>
-
-          <div className="hero-actions">
-            <a className="hero-primary-btn" href="#shop">
-              <span>EXPLORE COLLECTION</span>
-              <ArrowRight className="btn-arrow" />
-            </a>
-            <a className="hero-story-link" href="#story">
-              <span>OUR STORY</span>
-              <ArrowRight className="story-arrow" />
-            </a>
-          </div>
+      <section className="hero" id="top" aria-label="Ilayal Karigai Campaign">
+        {/* Continuous Full-Width Background Fashion Image Layer */}
+        <div className="hero-bg-layer" aria-hidden="true">
+          <picture className="hero-picture">
+            <source
+              media="(min-width: 768px)"
+              srcSet="/Elegant%20Ivory%20Saree%20Editorial.png"
+            />
+            <source
+              media="(max-width: 767px)"
+              srcSet="/mobile-hero-editorial.png"
+            />
+            <img
+              src="/Elegant%20Ivory%20Saree%20Editorial.png"
+              alt="Ilayal Karigai woman wearing handcrafted saree with antique gold border in rich maroon editorial setting"
+              fetchPriority="high"
+              className="hero-bg-img"
+            />
+          </picture>
         </div>
 
-        {/* Editorial Collection & Slide Track Indicators */}
-        <div className="hero-metadata-row">
-          <div className="hero-index-group">
-            <span className="slide-num">01 / 04</span>
-            <div className="slide-progress-track">
-              <div className="slide-progress-bar" />
+        {/* Seamless Feathered Gradient Overlay: Soft left-weighted contrast without hard vertical boundaries */}
+        <div className="hero-gradient-overlay" aria-hidden="true" />
+
+        {/* Hero Content Container: Left-aligned over continuous background */}
+        <div className="hero-container">
+          <div className="hero-editorial-content">
+            <div className="hero-eyebrow-wrapper">
+              <span className="hero-eyebrow-accent-line" aria-hidden="true" />
+              <p className="hero-eyebrow-text">{t.hero.eyebrow}</p>
+            </div>
+
+            <h1 className="hero-headline">
+              <span className="headline-line-1">{t.hero.headline_line_1}</span>
+              <span className="headline-line-2">
+                {t.hero.headline_with} <span className="headline-intent">{t.hero.headline_intent}</span>
+              </span>
+            </h1>
+
+            <p className="hero-copy">{t.hero.copy}</p>
+
+            <div className="hero-actions">
+              <a className="hero-primary-btn" href="#shop" onClick={() => setSelectedCategory('all')}>
+                <span>{t.hero.explore}</span>
+                <ArrowRight className="btn-arrow" size={16} />
+              </a>
+              <a className="hero-story-link" href="#story">
+                <span>{t.hero.our_story}</span>
+                <ArrowRight className="story-arrow" size={14} />
+              </a>
+            </div>
+
+            {/* Editorial Slide / Collection Metadata Track */}
+            <div className="hero-metadata-row">
+              <div className="hero-index-group">
+                <span className="slide-num">01 / 04</span>
+                <div className="slide-progress-track" aria-hidden="true">
+                  <div className="slide-progress-bar" />
+                </div>
+              </div>
+              <div className="hero-caption-group">
+                <p className="caption-title">{t.hero.slide_title}</p>
+                <p className="caption-sub">{t.hero.slide_sub}</p>
+              </div>
             </div>
           </div>
-          <div className="hero-caption-group">
-            <p className="caption-title">THE INDIRA EDIT</p>
-            <p className="caption-sub">HANDLOOM COTTON · 01 / 04</p>
+
+          {/* Restrained Editorial Atelier Badge */}
+          <div className="hero-editorial-badge" aria-hidden="true">
+            <span className="badge-vert-text">{t.hero.atelier_badge}</span>
+            <span className="badge-gold-line" />
           </div>
         </div>
+
+        {/* Smooth low-height seam connecting seamlessly to the intro strip */}
+        <div className="hero-bottom-seam" aria-hidden="true" />
       </section>
 
       {/* Intro Strip in Pure Clean Background */}
       <section className="intro-strip">
-        <p className="eyebrow">ILAYYAL KARIGAI / 2026</p>
+        <p className="eyebrow">{locale === 'ta' ? 'இளையள் காரிகை / 2026' : 'ILAYYAL KARIGAI / 2026'}</p>
         <p className="intro-copy">
-          A considered wardrobe for days that matter
-          <br className="desktop-only" /> and all the ones in between.
+          {locale === 'ta' ? (
+            <>
+              முக்கியமான நாட்களுக்கான அழகிய ஆடை
+              <br className="desktop-only" /> மற்றும் அவற்றுக்கு இடைப்பட்ட அனைத்து நாட்களுக்கும்.
+            </>
+          ) : (
+            <>
+              A considered wardrobe for days that matter
+              <br className="desktop-only" /> and all the ones in between.
+            </>
+          )}
         </p>
         <ArrowDownRight className="intro-arrow" />
       </section>
@@ -959,22 +1162,33 @@ export default function App() {
       <section className="collections-section section-pad" id="collections">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">01 — Collections</p>
+            <p className="eyebrow">{t.sections.collections_eyebrow}</p>
             <h2>
-              Find your
+              {t.sections.collections_title_find}
               <br />
-              <em>everyday.</em>
+              <em>{t.sections.collections_title_everyday}</em>
             </h2>
           </div>
-          <p className="heading-note">
-            Five ways to wear
-            <br />a point of view.
+          <p className="heading-note" style={{ whiteSpace: 'pre-line' }}>
+            {t.sections.collections_note}
           </p>
         </div>
         <div className="collection-viewport" aria-label="Everyday collections carousel">
           <div className="collection-track">
             {[...collections, ...collections].map((col, idx) => {
               const isDuplicate = idx >= collections.length;
+              const colTitle = locale === 'ta' ? col.tamil : col.name;
+              const colNote = locale === 'ta'
+                ? (col.key === 'Everyday Cotton' ? 'கைத்தறி குர்த்திகள் & எளிய ஆடைகள்'
+                  : col.key === 'Traditional Wear' ? 'தூய காஞ்சிபுரம் & கைத்தறி பட்டுச் சேலைகள்'
+                  : col.key === 'Festive Collection' ? 'தாமரை எம்பிராய்டரி அனார்கலி & லெஹங்கா'
+                  : col.key === 'Contemporary Designs' ? 'நவீன கோ-ஆர்ட்ஸ் & அடுக்கு ஆடைகள்'
+                  : 'புதிய 2026 கைவினை ஆடைகள்')
+                : col.note;
+              const colPrice = locale === 'ta'
+                ? col.startingPrice.replace('From', '').trim() + ' முதல்'
+                : col.startingPrice;
+
               return (
                 <a
                   className={`collection-card card-${idx % collections.length}`}
@@ -987,14 +1201,12 @@ export default function App() {
                     document.getElementById('shop')?.scrollIntoView({ behavior: 'smooth' });
                   }}
                 >
-                  <img src={col.image} alt={isDuplicate ? '' : `${col.name} collection`} />
+                  <img src={col.image} alt={isDuplicate ? '' : `${colTitle} collection`} />
                   <div className="card-overlay" />
                   <div className="collection-info">
-                    <p>{col.note}</p>
-                    <h3>{col.name}</h3>
-                    <span>
-                      {col.tamil} · {col.startingPrice}
-                    </span>
+                    <p>{colNote}</p>
+                    <h3>{colTitle}</h3>
+                    <span>{colPrice}</span>
                   </div>
                   <ArrowRight />
                 </a>
@@ -1017,27 +1229,24 @@ export default function App() {
           <div className="statement-fusion-blend" />
           <div className="statement-fusion-tag">
             <span />
-            Traditional Heritage Edit · 01 / 03
+            {locale === 'ta' ? 'பாரம்பரிய கைவினைத் தொகுப்பு · 01 / 03' : 'Traditional Heritage Edit · 01 / 03'}
           </div>
         </div>
         <div className="statement-copy">
-          <p className="eyebrow">02 — The point of view</p>
+          <p className="eyebrow">{t.sections.statement_eyebrow}</p>
           <h2>
-            Not just clothing.
+            {t.sections.statement_h2_main}
             <br />
-            <em>A signature of our own.</em>
+            <em>{t.sections.statement_h2_em}</em>
           </h2>
-          <p>
-            From fabric selection to silhouette, pattern and finishing, every piece is thoughtfully
-            developed under the Ilayyal Karigai identity.
-          </p>
+          <p>{t.sections.statement_desc}</p>
           <div className="signature-list">
-            <span>Designed by us.</span>
-            <span>Crafted for you.</span>
-            <span>Available only from Ilayyal Karigai.</span>
+            <span>{t.sections.statement_sig1}</span>
+            <span>{t.sections.statement_sig2}</span>
+            <span>{t.sections.statement_sig3}</span>
           </div>
           <a className="text-link dark" href="#story">
-            More about the label <ArrowRight />
+            {t.sections.statement_more} <ArrowRight />
           </a>
         </div>
       </section>
@@ -1048,11 +1257,11 @@ export default function App() {
       <section className="shop-section section-pad" id="shop">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">03 — Handcrafted Catalogue</p>
+            <p className="eyebrow">{t.sections.catalogue_eyebrow}</p>
             <h2>
-              Pieces to
+              {t.sections.catalogue_title_pieces}
               <br />
-              <em>keep close.</em>
+              <em>{t.sections.catalogue_title_close}</em>
             </h2>
           </div>
           <a
@@ -1063,130 +1272,40 @@ export default function App() {
               navigateTo('collections');
             }}
           >
-            View full catalogue <ArrowRight />
+            {t.sections.view_catalogue} <ArrowRight />
           </a>
         </div>
-
-        {/* Category & Collection Filter Bar */}
-        <div className="category-filter-bar" role="tablist" aria-label="Product categories">
-          {categoryFilters.map((tab) => (
-            <button
-              key={tab.key}
-              role="tab"
-              aria-selected={selectedCategory === tab.key}
-              className={`category-pill ${selectedCategory === tab.key ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(tab.key)}
-            >
-              <span>{tab.label}</span>
-              <span className="pill-count">{tab.count}</span>
-            </button>
-          ))}
+        {/* Interactive Category Buttons & Filter Bar */}
+        <div style={{ marginBottom: '32px' }}>
+          <CategoryFilterBar
+            categories={homeFilterCategories}
+            activeCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            ariaLabel="Handcrafted collection categories"
+          />
         </div>
 
-        {/* Responsive 3-Column Grid */}
+        {/* Responsive 3D Product Cards Grid */}
         <div className="product-grid-3col">
-          {filteredProducts.map((product) => (
-            <article className="product-card-3col" key={product.id}>
-              <div
-                className="product-image-frame"
-                onClick={() => {
-                  setSelectedProduct(product);
-                  setSelectedSize(product.sizes[0] || 'M');
-                }}
-              >
-                <img src={product.image} alt={`${product.name} ${product.subtitle}`} />
-                {product.isBestSeller && product.salesCount ? (
-                  <span
-                    className="product-badge-pill"
-                    style={{
-                      background: '#FAF6EE',
-                      color: '#7B5B31',
-                      border: '1px solid #D8B879',
-                    }}
-                  >
-                    ★ Best-Seller ({product.salesCount}+ sold)
-                  </span>
-                ) : product.isNewArrival ? (
-                  <span
-                    className="product-badge-pill"
-                    style={{ background: '#F8F4EB', color: '#2E6930' }}
-                  >
-                    New Arrival
-                  </span>
-                ) : (
-                  <span className="product-badge-pill">{product.stock}</span>
-                )}
-                <button
-                  className={`heart-button-compact ${
-                    savedProducts.includes(product.name) ? 'active' : ''
-                  }`}
-                  style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 3 }}
-                  onClick={(e) => toggleSaveProduct(product.name, e)}
-                  aria-label={`Save ${product.name}`}
-                >
-                  <Heart fill={savedProducts.includes(product.name) ? '#c94040' : 'none'} />
-                </button>
-                <span className="product-hover-action">
-                  Quick View <ArrowRight />
-                </span>
-              </div>
-
-              <div className="product-card-details">
-                <div className="product-card-top-row">
-                  <div className="product-card-name-group">
-                    <h3 className="product-card-title">
-                      {product.name} <small>{product.tamil}</small>
-                    </h3>
-                    <p className="product-card-subtitle">{product.subtitle}</p>
-                  </div>
-                  <div className="product-card-price-group">
-                    <span className="product-card-price">{product.price}</span>
-                  </div>
-                </div>
-
-                {/* Available Sizes Row */}
-                <div className="product-card-sizes-row">
-                  <span className="size-label">Sizes:</span>
-                  {product.sizes.map((sz) => (
-                    <span key={sz} className="size-pill-tag">
-                      {sz}
-                    </span>
-                  ))}
-                </div>
-
-                {/* Availability Row */}
-                <div className="product-card-status-row">
-                  <span className={`availability-indicator ${product.stockStatus}`}>
-                    <span className="availability-dot" />
-                    {product.stock}
-                  </span>
-                  <span className="verified-sales-badge">{product.category}</span>
-                </div>
-
-                {/* Action Buttons: View Product & WhatsApp Order */}
-                <div className="product-card-actions-row">
-                  <button
-                    className="btn-view-product"
-                    onClick={() => {
-                      setSelectedProduct(product);
-                      setSelectedSize(product.sizes[0] || 'M');
-                    }}
-                  >
-                    <Eye style={{ width: '12px', height: '12px' }} /> View Product
-                  </button>
-                  <a
-                    className="btn-whatsapp-order"
-                    href={getWhatsAppUrl(
-                      `Hello Ilayyal Karigai (+91 98401 82019), I would like to order ${product.name} — ${product.subtitle} (${product.price}). Availability: ${product.stock}. Please confirm size availability.`
-                    )}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <MessageCircle style={{ width: '13px', height: '13px' }} /> WhatsApp
-                  </a>
-                </div>
-              </div>
-            </article>
+          {filteredProducts.map((product, idx) => (
+            <ProductCard3D
+              key={product.id}
+              product={product}
+              index={idx}
+              isSaved={savedProducts.includes(product.name)}
+              onToggleSave={(name, e) => toggleSaveProduct(name, e)}
+              onQuickView={(p) => {
+                setSelectedProduct(p);
+                setSelectedSize(p.sizes[0] || 'M');
+              }}
+              onAddToCart={(p, size, e) => {
+                setSelectedProduct(p);
+                setSelectedSize(size);
+                setBagCount((c) => c + 1);
+                setCartOpen(true);
+              }}
+              onOpenWhatsAppInquiry={(p) => setInquiryProduct(p)}
+            />
           ))}
         </div>
       </section>
@@ -1561,7 +1680,7 @@ export default function App() {
             <p className="eyebrow">Connect</p>
             <a href="#contact">Instagram</a>
             <a
-              href={getWhatsAppUrl('Hello Ilayyal Karigai (+91 98401 82019), I would like to enquire about your collections.')}
+              href={getWhatsAppUrl('Hello Ilayal Karigai (+91 98401 82019), I would like to enquire about your collections.')}
               target="_blank"
               rel="noreferrer"
             >
@@ -1569,12 +1688,35 @@ export default function App() {
             </a>
             <a href="#contact">Boutique Concierge</a>
           </div>
+          <div>
+            <p className="eyebrow">Administration</p>
+            <button
+              onClick={() => navigateTo('admin')}
+              style={{
+                background: 'transparent',
+                border: 'none',
+                color: 'inherit',
+                padding: '6px 0',
+                fontSize: '12px',
+                cursor: 'pointer',
+                textAlign: 'left',
+                opacity: 0.85,
+                letterSpacing: '0.04em',
+              }}
+            >
+              Admin Portal →
+            </button>
+          </div>
         </div>
         <div className="footer-bottom">
           <span>© 2026 Ilayyal Karigai</span>
           <span>WhatsApp Enquiries: +91 98401 82019 · Made with care in India</span>
         </div>
       </footer>
+    </main>
+  </motion.div>
+)}
+</AnimatePresence>
 
       {/* Product Detail Modal */}
       {selectedProduct && (
@@ -1764,22 +1906,19 @@ export default function App() {
         </div>
       )}
 
+      {/* Direct WhatsApp Concierge Inquiry Modal */}
+      <WhatsAppInquiryModal
+        product={inquiryProduct}
+        isOpen={!!inquiryProduct}
+        onClose={() => setInquiryProduct(null)}
+      />
+
       {/* Floating WhatsApp Concierge Widget */}
-      <a
-        href={getWhatsAppUrl(
-          'Hello Ilayyal Karigai (+91 98401 82019), I would like to enquire about your handcrafted collections, custom sizing, and orders.'
-        )}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="floating-whatsapp-widget"
-        aria-label="Order or enquire on WhatsApp at +91 98401 82019"
-      >
-        <MessageCircle />
-        <span>
-          <small>Order &amp; Enquire</small>
-          +91 98401 82019
-        </span>
-      </a>
-    </main>
+      <WhatsAppWidget
+        phoneNumber={WHATSAPP_PHONE}
+        rawPhoneNumber={WHATSAPP_RAW_NUMBER}
+        prefilledMessage="Hello Ilayal Karigai, I would like to enquire about your collection."
+      />
+    </>
   );
 }
