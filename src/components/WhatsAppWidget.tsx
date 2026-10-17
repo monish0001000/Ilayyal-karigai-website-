@@ -7,6 +7,7 @@ import { useLocale } from '../context/LocaleContext';
 interface WhatsAppWidgetProps {
   phoneNumber?: string;
   rawPhoneNumber?: string;
+  prefilledMessage?: string;
 }
 
 interface ChatMessage {

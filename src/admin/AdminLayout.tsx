@@ -44,24 +44,32 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   return (
     <div className="admin-portal-shell">
-      {/* Top Header */}
-      <header className="admin-portal-header">
-        <div className="admin-header-left">
+      {/* Top Header - Mobile First Sticky Navbar */}
+      <header className="sticky top-0 z-40 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-[#D4AF37]/20 px-4 py-3 flex items-center justify-between admin-portal-header">
+        <div className="admin-header-left flex items-center gap-2 md:gap-3">
           <button
-            className="admin-mobile-toggle"
+            className="admin-mobile-toggle md:hidden p-1.5 rounded-lg hover:bg-[#800020]/10 text-[#800020] transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle navigation menu"
           >
             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <div className="admin-brand-mark" onClick={onNavigateHome} title="View store">
-            <span className="brand-name">ILAYAL KARIGAI</span>
-            <span className="brand-portal-pill">ADMIN</span>
+          <div
+            className="admin-brand-mark flex items-center gap-2 cursor-pointer select-none"
+            onClick={onNavigateHome}
+            title="View store"
+          >
+            <span className="brand-name text-base md:text-lg font-serif font-bold tracking-widest text-[#26050C]">
+              ILAYAL KARIGAI
+            </span>
+            <span className="bg-[#800020] text-[#D4AF37] uppercase tracking-wider text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm">
+              ADMIN
+            </span>
           </div>
         </div>
 
         {/* Desktop Navigation Tabs */}
-        <nav className="admin-nav-tabs">
+        <nav className="admin-nav-tabs hidden md:flex items-center gap-2">
           <button
             onClick={() => setActiveTab('products')}
             className={`admin-tab-btn ${activeTab === 'products' ? 'active' : ''}`}
@@ -85,29 +93,57 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
           </button>
         </nav>
 
-        {/* User actions */}
-        <div className="admin-header-right">
+        {/* User actions: Compact on mobile (< 768px), full on desktop */}
+        <div className="admin-header-right flex items-center gap-2 md:gap-3">
+          {/* Mobile Live Store Icon Button */}
           <button
             onClick={onNavigateHome}
-            className="admin-view-store-btn"
+            className="md:hidden p-2 rounded-xl border border-[#D4AF37]/30 bg-white/80 text-[#800020] hover:bg-[#800020] hover:text-white transition-all shadow-sm"
+            title="View Live Storefront"
+            aria-label="View Live Storefront"
+          >
+            <ExternalLink size={16} />
+          </button>
+
+          {/* Desktop Live Store Button */}
+          <button
+            onClick={onNavigateHome}
+            className="admin-view-store-btn hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#D4AF37]/30 bg-white/80 text-xs font-semibold text-[#800020] hover:bg-[#800020] hover:text-white transition-all shadow-sm"
             title="Return to boutique storefront"
           >
             <span>Live Store</span>
             <ExternalLink size={14} />
           </button>
 
-          <div className="admin-user-badge" title={`Signed in as ${user.email}`}>
-            <Shield size={14} className="text-antique-gold" />
-            <span className="user-email">{user.email}</span>
+          {/* Desktop User Badge */}
+          <div
+            className="admin-user-badge hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/60 border border-[#D4AF37]/20 text-xs text-[#26050C]"
+            title={`Signed in as ${user.email.replace('ilayal', 'elaiyal')}`}
+          >
+            <Shield size={14} className="text-[#D4AF37]" />
+            <span className="user-email font-mono truncate max-w-[180px]">
+              {user.email.replace('ilayal', 'elaiyal')}
+            </span>
           </div>
 
+          {/* Mobile Compact Logout Button */}
           <button
             onClick={handleSignOut}
-            className="admin-logout-btn"
-            title="Sign out of Admin Portal"
+            className="md:hidden p-2 rounded-xl bg-[#800020]/10 text-[#800020] hover:bg-[#800020] hover:text-white transition-all"
+            title="Sign Out"
             aria-label="Sign out"
           >
             <LogOut size={16} />
+          </button>
+
+          {/* Desktop Full Logout Button */}
+          <button
+            onClick={handleSignOut}
+            className="admin-logout-btn hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#800020]/10 hover:bg-[#800020] text-[#800020] hover:text-white text-xs font-semibold transition-all"
+            title="Sign out of Admin Portal"
+            aria-label="Sign out"
+          >
+            <LogOut size={15} />
             <span className="logout-text">Sign Out</span>
           </button>
         </div>

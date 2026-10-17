@@ -819,15 +819,6 @@ export default function App() {
           <a href="#shop" onClick={() => setSelectedCategory('Best Sellers')}>{t.nav.bestsellers}</a>
           <a href="#story">{t.nav.story}</a>
           <a href="#contact">{t.nav.contact}</a>
-          <a
-            href={getWhatsAppUrl('Hello Ilayal Karigai (+91 98401 82019), I would like to enquire about your handcrafted collections.')}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#128C7E', fontWeight: 600 }}
-          >
-            <WhatsAppIcon size={14} />
-            {t.nav.whatsapp}
-          </a>
           <button
             onClick={() => navigateTo('admin')}
             className="nav-admin-link"
